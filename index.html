@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credit Cleared — Your Personalized Credit Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0A1628;
+  --navy-mid: #0F2040;
+  --navy-light: #152847;
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --gold-pale: #FFF8E7;
+  --white: #FFFFFF;
+  --off-white: #F8F6F1;
+  --gray-light: #E8E4DC;
+  --gray-mid: #9A9488;
+  --gray-dark: #4A4640;
+  --red-accent: #8B2020;
+  --green-accent: #1A5C3A;
+  --text-body: #2C2820;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy);
+  color: var(--white);
+  overflow-x: hidden;
+  line-height: 1.7;
+}
+
+/* ── TYPOGRAPHY ── */
+.display { font-family: 'Playfair Display', serif; }
+.serif { font-family: 'DM Serif Display', serif; }
+
+h1, h2, h3 { font-family: 'Playfair Display', serif; line-height: 1.2; }
+
+/* ── LAYOUT ── */
+.container { max-width: 860px; margin: 0 auto; padding: 0 28px; }
+.container-wide { max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+
+section { position: relative; }
+
+/* ── DECORATIVE DIVIDERS ── */
+.gold-line {
+  width: 60px; height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  margin: 28px auto;
+  border-radius: 2px;
+}
+.gold-line-left {
+  width: 60px; height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  margin: 24px 0;
+  border-radius: 2px;
+}
+
+/* ── SECTION LABELS ── */
+.section-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 20px;
+  display: block;
+}
+
+/* ── BUTTONS ── */
+.btn-primary {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: var(--navy);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 20px 48px;
+  border-radius: 4px;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 40px rgba(201,168,76,0.35);
+  cursor: pointer;
+  border: none;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 50px rgba(201,168,76,0.5);
+}
+.btn-secondary {
+  display: inline-block;
+  background: transparent;
+  color: var(--gold);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 18px 44px;
+  border-radius: 4px;
+  text-decoration: none;
+  border: 2px solid var(--gold);
+  transition: all 0.2s;
+}
+.btn-secondary:hover {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+/* ══════════════════════════════════════════
+   SECTION 1 — HOOK
+══════════════════════════════════════════ */
+#hook {
+  background: var(--navy);
+  padding: 100px 0 80px;
+  position: relative;
+  overflow: hidden;
+}
+#hook::before {
+  content: '';
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+#hook::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
+}
+.hook-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 28px;
+  display: block;
+}
+.hook-headline {
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 40px;
+  color: var(--white);
+}
+.hook-headline em {
+  font-style: italic;
+  color: var(--gold);
+}
+.hook-copy p {
+  font-size: 1.15rem;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 22px;
+  font-weight: 300;
+  line-height: 1.8;
+}
+.hook-copy p strong {
+  color: var(--white);
+  font-weight: 600;
+}
+.hook-copy .closer {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.25rem;
+  color: var(--gold-light);
+  font-style: italic;
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(201,168,76,0.2);
+}
+.stat-callout {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(201,168,76,0.12), rgba(201,168,76,0.06));
+  border: 1px solid rgba(201,168,76,0.3);
+  border-left: 4px solid var(--gold);
+  padding: 28px 36px;
+  margin: 32px 0;
+  border-radius: 0 4px 4px 0;
+}
+.stat-callout .stat-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+  display: block;
+}
+.stat-callout .stat-label {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.7);
+  margin-top: 6px;
+  display: block;
+}
+
+/* ══════════════════════════════════════════
+   SECTION 2 — RELEVANCE
+══════════════════════════════════════════ */
+#relevance {
+  background: var(--navy-mid);
+  padding: 90px 0;
+  position: relative;
+}
+#relevance::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.2), transparent);
+}
+.relevance-headline {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  margin-bottom: 44px;
+  color: var(--white);
+}
+.relevance-copy p {
+  font-size: 1.08rem;
+  color: rgba(255,255,255,0.82);
+  margin-bottom: 22px;
+  line-height: 1.85;
+  font-weight: 300;
+}
+.relevance-copy p strong { color: var(--white); font-weight: 600; }
+.relevance-copy .closer {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  color: var(--gold-light);
+  font-size: 1.1rem;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(201,168,76,0.2);
+}
+
+/* ══════════════════════════════════════════
+   SECTION 3 — TRUST
+══════════════════════════════════════════ */
+#trust {
+  background: var(--off-white);
+  padding: 90px 0;
+  color: var(--text-body);
+}
+#trust::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(10,22,40,0.15), transparent);
+}
+.trust-headline {
+  font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 40px;
+  line-height: 1.2;
+}
+.trust-copy p {
+  font-size: 1.05rem;
+  color: var(--gray-dark);
+  margin-bottom: 22px;
+  line-height: 1.85;
+}
+.trust-copy p strong { color: var(--navy); }
+.trust-copy .closer {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  color: var(--navy);
+  font-size: 1.05rem;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(10,22,40,0.12);
+}
+.trust-badge {
+  display: flex;
+  gap: 32px;
+  margin: 40px 0;
+  flex-wrap: wrap;
+}
+.trust-badge-item {
+  flex: 1;
+  min-width: 200px;
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-top: 3px solid var(--navy);
+  padding: 24px;
+  border-radius: 0 0 4px 4px;
+}
+.trust-badge-item .badge-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--navy);
+  display: block;
+}
+.trust-badge-item .badge-label {
+  font-size: 0.85rem;
+  color: var(--gray-mid);
+  margin-top: 4px;
+  display: block;
+}
+
+/* ══════════════════════════════════════════
+   SECTION 4 — SKEPTICISM
+══════════════════════════════════════════ */
+#skepticism {
+  background: var(--navy);
+  padding: 90px 0;
+  position: relative;
+}
+#skepticism::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
+}
+.skepticism-headline {
+  font-size: clamp(1.7rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 40px;
+  line-height: 1.2;
+}
+.skepticism-copy p {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.82);
+  margin-bottom: 22px;
+  line-height: 1.85;
+  font-weight: 300;
+}
+.skepticism-copy p strong { color: var(--white); font-weight: 600; }
+.skepticism-copy .closer {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  color: var(--gold-light);
+  font-size: 1.05rem;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(201,168,76,0.2);
+}
+.mechanism-box {
+  background: rgba(201,168,76,0.07);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-left: 4px solid var(--gold);
+  padding: 32px 36px;
+  margin: 36px 0;
+  border-radius: 0 4px 4px 0;
+}
+.mechanism-box p {
+  color: rgba(255,255,255,0.88) !important;
+  margin-bottom: 0 !important;
+}
+
+/* ══════════════════════════════════════════
+   SECTION 5 — HOW IT WORKS
+══════════════════════════════════════════ */
+#how-it-works {
+  background: var(--navy-light);
+  padding: 90px 0;
+}
+.how-headline {
+  font-size: clamp(1.7rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 44px;
+}
+.steps-grid {
+  display: grid;
+  gap: 2px;
+  margin: 48px 0;
+}
+.step {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 28px;
+  align-items: start;
+  padding: 32px 0;
+  border-bottom: 1px solid rgba(201,168,76,0.1);
+}
+.step:last-child { border-bottom: none; }
+.step-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: rgba(201,168,76,0.25);
+  line-height: 1;
+  padding-top: 4px;
+}
+.step-content h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  margin-bottom: 10px;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.01em;
+}
+.step-content p {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.78);
+  line-height: 1.8;
+  font-weight: 300;
+}
+.how-copy p {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.82);
+  margin-bottom: 22px;
+  line-height: 1.85;
+  font-weight: 300;
+}
+.how-copy .closer {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  color: var(--gold-light);
+  font-size: 1.05rem;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(201,168,76,0.2);
+}
+
+/* ══════════════════════════════════════════
+   SECTION 6 — PRICE
+══════════════════════════════════════════ */
+#price {
+  background: var(--off-white);
+  padding: 90px 0;
+  color: var(--text-body);
+}
+.price-headline {
+  font-size: clamp(1.7rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 40px;
+  line-height: 1.2;
+}
+.price-copy p {
+  font-size: 1.05rem;
+  color: var(--gray-dark);
+  margin-bottom: 22px;
+  line-height: 1.85;
+}
+.price-copy p strong { color: var(--navy); }
+.price-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 48px 0;
+}
+@media (max-width: 640px) { .price-cards { grid-template-columns: 1fr; } }
+.price-card {
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 6px;
+  padding: 36px;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.price-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(10,22,40,0.12);
+}
+.price-card.featured {
+  border-color: var(--navy);
+  border-top: 4px solid var(--navy);
+}
+.price-card.premium {
+  background: var(--navy);
+  border-color: var(--gold);
+  border-top: 4px solid var(--gold);
+}
+.price-card-badge {
+  position: absolute;
+  top: -14px; right: 24px;
+  background: var(--gold);
+  color: var(--navy);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+}
+.price-card-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray-mid);
+  margin-bottom: 12px;
+}
+.price-card.premium .price-card-name { color: rgba(255,255,255,0.5); }
+.price-amount {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.2rem;
+  font-weight: 900;
+  color: var(--navy);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.price-card.premium .price-amount { color: var(--gold); }
+.price-amount sup { font-size: 1.4rem; vertical-align: super; }
+.price-once {
+  font-size: 0.8rem;
+  color: var(--gray-mid);
+  margin-bottom: 28px;
+}
+.price-card.premium .price-once { color: rgba(255,255,255,0.45); }
+.price-features {
+  list-style: none;
+  margin-bottom: 32px;
+}
+.price-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(10,22,40,0.06);
+  font-size: 0.92rem;
+  color: var(--gray-dark);
+  line-height: 1.5;
+}
+.price-card.premium .price-features li {
+  color: rgba(255,255,255,0.8);
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+.price-features li:last-child { border-bottom: none; }
+.price-features li::before {
+  content: '✓';
+  color: var(--green-accent);
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.price-card.premium .price-features li::before { color: var(--gold); }
+.price-copy .closer {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  color: var(--navy);
+  font-size: 1.05rem;
+  margin-top: 8px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(10,22,40,0.1);
+}
+
+/* ══════════════════════════════════════════
+   SECTION 7 — DON'T NEED IT
+══════════════════════════════════════════ */
+#dont-need-it {
+  background: var(--navy);
+  padding: 90px 0;
+  position: relative;
+}
+.dont-headline {
+  font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 40px;
+  line-height: 1.2;
+}
+.dont-copy p {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.82);
+  margin-bottom: 22px;
+  line-height: 1.85;
+  font-weight: 300;
+}
+.dont-copy p strong { color: var(--white); font-weight: 600; }
+.two-futures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 44px 0;
+}
+@media (max-width: 640px) { .two-futures { grid-template-columns: 1fr; } }
+.future-card {
+  padding: 32px;
+  border-radius: 4px;
+}
+.future-card.without {
+  background: rgba(139,32,32,0.12);
+  border: 1px solid rgba(139,32,32,0.3);
+  border-top: 3px solid #8B2020;
+}
+.future-card.with {
+  background: rgba(26,92,58,0.12);
+  border: 1px solid rgba(26,92,58,0.3);
+  border-top: 3px solid #1A5C3A;
+}
+.future-card h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.future-card.without h3 { color: #D9534F; }
+.future-card.with h3 { color: #5CB85C; }
+.future-card ul {
+  list-style: none;
+}
+.future-card ul li {
+  font-size: 0.92rem;
+  color: rgba(255,255,255,0.78);
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.5;
+}
+.future-card ul li:last-child { border-bottom: none; }
+.future-card.without ul li::before { content: '—'; position: absolute; left: 0; color: #D9534F; }
+.future-card.with ul li::before { content: '→'; position: absolute; left: 0; color: #5CB85C; }
+.dont-copy .closer {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  color: var(--gold-light);
+  font-size: 1.05rem;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(201,168,76,0.2);
+}
+
+/* ══════════════════════════════════════════
+   SECTION 9 — PROCRASTINATION
+══════════════════════════════════════════ */
+#procrastination {
+  background: var(--off-white);
+  padding: 90px 0;
+  color: var(--text-body);
+}
+.proc-headline {
+  font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 40px;
+  line-height: 1.2;
+}
+.proc-copy p {
+  font-size: 1.05rem;
+  color: var(--gray-dark);
+  margin-bottom: 22px;
+  line-height: 1.85;
+}
+.proc-copy p strong { color: var(--navy); }
+.proc-cta {
+  text-align: center;
+  margin-top: 52px;
+  padding-top: 48px;
+  border-top: 1px solid var(--gray-light);
+}
+.proc-cta p {
+  font-size: 0.9rem;
+  color: var(--gray-mid);
+  margin-top: 16px;
+}
+
+/* ══════════════════════════════════════════
+   SECTION 10 — COST OF INACTION
+══════════════════════════════════════════ */
+#cost-of-inaction {
+  background: var(--navy);
+  padding: 100px 0 120px;
+  position: relative;
+  overflow: hidden;
+}
+#cost-of-inaction::before {
+  content: '';
+  position: absolute;
+  bottom: -300px; left: -200px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.inaction-headline {
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  font-weight: 900;
+  color: var(--white);
+  margin-bottom: 40px;
+  line-height: 1.15;
+}
+.inaction-copy p {
+  font-size: 1.08rem;
+  color: rgba(255,255,255,0.82);
+  margin-bottom: 22px;
+  line-height: 1.85;
+  font-weight: 300;
+}
+.inaction-copy p strong { color: var(--white); font-weight: 600; }
+.inaction-copy .final-line {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.35rem;
+  font-style: italic;
+  color: var(--gold-light);
+  margin-top: 40px;
+  padding: 32px 0;
+  border-top: 1px solid rgba(201,168,76,0.25);
+  border-bottom: 1px solid rgba(201,168,76,0.25);
+  text-align: center;
+  line-height: 1.6;
+}
+.final-cta {
+  text-align: center;
+  margin-top: 56px;
+}
+.final-cta p {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 20px;
+  letter-spacing: 0.02em;
+}
+
+/* ══════════════════════════════════════════
+   TESTIMONIALS
+══════════════════════════════════════════ */
+.testimonials {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 48px 0;
+}
+@media (max-width: 768px) { .testimonials { grid-template-columns: 1fr; } }
+.testimonial {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 4px;
+  padding: 28px;
+}
+.testimonial-text {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.78);
+  line-height: 1.7;
+  font-style: italic;
+  margin-bottom: 16px;
+}
+.testimonial-author {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+}
+.testimonial-result {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.45);
+  margin-top: 2px;
+}
+.stars {
+  color: var(--gold);
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+
+/* ══════════════════════════════════════════
+   NAV / HEADER
+══════════════════════════════════════════ */
+.site-nav {
+  background: rgba(10,22,40,0.95);
+  backdrop-filter: blur(10px);
+  padding: 18px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(201,168,76,0.15);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--white);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+.nav-logo span { color: var(--gold); }
+.nav-cta {
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--gold);
+  color: var(--navy);
+  padding: 10px 24px;
+  border-radius: 3px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.nav-cta:hover { opacity: 0.9; }
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+footer {
+  background: #060E1A;
+  padding: 40px 0;
+  border-top: 1px solid rgba(201,168,76,0.1);
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.footer-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.5);
+}
+.footer-logo span { color: var(--gold); }
+.footer-legal {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.3);
+  max-width: 600px;
+  line-height: 1.6;
+}
+.footer-links {
+  display: flex;
+  gap: 20px;
+}
+.footer-links a {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+  text-decoration: none;
+}
+.footer-links a:hover { color: var(--gold); }
+
+/* ══════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════ */
+.text-center { text-align: center; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mt-32 { margin-top: 32px; }
+.mb-32 { margin-bottom: 32px; }
+
+@media (max-width: 768px) {
+  .container { padding: 0 20px; }
+  .trust-badge { flex-direction: column; }
+  
+  
+  .two-futures { grid-template-columns: 1fr; }
+}
+
+
+/* ── PULL QUOTES ── */
+.pull-quote {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  font-size: clamp(1.15rem, 2.3vw, 1.45rem);
+  color: var(--gold-light);
+  line-height: 1.6;
+  padding: 28px 0 28px 26px;
+  border-left: 3px solid var(--gold);
+  margin: 36px 0;
+}
+.pull-quote-dark {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+  color: var(--navy);
+  line-height: 1.6;
+  padding: 28px 0 28px 26px;
+  border-left: 3px solid var(--navy);
+  margin: 36px 0;
+}
+/* ── DELIVERABLES GRID ── */
+.deliverables-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 11px;
+  margin: 40px 0;
+}
+@media(max-width:540px){ .deliverables-grid { grid-template-columns:1fr; } }
+.deliverable-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 4px;
+  padding: 15px 17px;
+}
+.deliverable-item .di-check { color: var(--gold); font-size: 0.95rem; flex-shrink:0; margin-top:3px; }
+.deliverable-item .di-text { font-size:0.88rem; color:rgba(255,255,255,0.78); line-height:1.5; }
+.deliverable-item .di-text strong { color:var(--white); display:block; font-size:0.9rem; margin-bottom:2px; }
+/* ── NAV TRUST TEXT ── */
+.nav-trust { font-size:0.73rem; color:rgba(255,255,255,0.4); }
+@media(max-width:580px){ .nav-trust { display:none; } }
+
+/* ── FADE-IN ANIMATION ── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <div class="container-wide nav-inner">
+    <a href="#" class="nav-logo">Credit<span>Cleared</span></a>
+    <span class="nav-trust">🔒 Secure · Educational Service</span>
+    <a href="#price" class="nav-cta">Get My Roadmap →</a>
+  </div>
+</nav>
+
+<!-- ══ SECTION 1: HOOK ══ -->
+<section id="hook">
+  <div class="container">
+    <span class="hook-eyebrow">Credit Cleared</span>
+    <h1 class="hook-headline fade-in">
+      Your Credit Score Is Costing You <em>$200,000</em> — And You Don't Even Know Where It's Going.
+    </h1>
+    <div class="hook-copy fade-in">
+      <p>Not on one bad loan. Not from one denied application.</p>
+      <p>From your car insurance. Your rent. Your interest rates. Your job applications. The deposit you had to put down that your neighbor didn't. The rate you got that your coworker didn't. The apartment you didn't get. The business loan that never happened.</p>
+      <div class="stat-callout">
+        <span class="stat-number">$200,000+</span>
+        <span class="stat-label">Average lifetime cost of damaged credit — in excess premiums, denied applications, and penalties most people never trace back to their score.</span>
+      </div>
+      <p>You're not behind because you're bad with money.</p>
+      <p><strong>You're behind because nobody ever handed you the exact plan, the exact words, and the exact phone numbers to fix the specific accounts on your specific report — until now.</strong></p>
+      <p style="font-family:'DM Serif Display',serif;font-style:italic;font-size:1.2rem;color:var(--gold-light);margin-top:32px;padding-top:26px;border-top:1px solid rgba(201,168,76,0.18);line-height:1.6;">That's what the next few minutes are about.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 2: RELEVANCE ══ -->
+<section id="relevance">
+  <div class="container">
+    <span class="section-label">Is This For Me?</span>
+    <h2 class="relevance-headline fade-in">This Was Built for People Who Are Tired of Waiting for Their Life to Start.</h2>
+    <div class="relevance-copy fade-in">
+      <p>If you've been putting off buying a house because you know what the lender is going to say — <strong>this is for you.</strong> If you've been watching your friends qualify for things you can't, paying rates you know aren't fair, or getting denied for apartments you could easily afford — <strong>this is for you.</strong></p>
+      <p>If you have collections on your report you've been ignoring because you didn't know where to start, charge-offs that feel too far gone to fix, or late payments from a season of your life you'd rather forget — <strong>this is for you.</strong></p>
+      <p>If you're a business owner who just found out your personal credit is blocking your first real loan — <strong>this is for you.</strong> If you're trying to get out from under a bad financial chapter and nobody has ever actually shown you the specific steps — <strong>this is for you.</strong></p>
+      <p>If you have a deadline. A closing date. A lease application pending. A car you need to finance next month. A job offer that comes with a credit check. If time is the constraint and you cannot afford to figure this out slowly — <strong>this is especially for you.</strong></p>
+      <p>And if you've tried the generic advice — the YouTube videos, the credit monitoring apps, the "pay your bills on time" suggestions — and none of it moved your score in any meaningful way, Credit Cleared was built for exactly the frustration you're feeling right now.</p>
+      <blockquote class="pull-quote">You don't need more general information. You need your specific situation mapped to a specific plan.</blockquote>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ EARLY PROOF BAR ══ -->
+<div style="background:#0F2040;border-top:1px solid rgba(201,168,76,0.1);border-bottom:1px solid rgba(201,168,76,0.1);padding:36px 0;">
+  <div style="max-width:1100px;margin:0 auto;padding:0 28px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;">
+    <div style="text-align:center;padding:14px 36px;border-right:1px solid rgba(255,255,255,0.07);">
+      <span style="font-family:Georgia,serif;font-size:2.3rem;font-weight:900;color:#C9A84C;display:block;line-height:1;">+74 pts</span>
+      <span style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:6px;display:block;line-height:1.4;">Marcus T. — 4 months<br>Charge-off resolved</span>
+    </div>
+    <div style="text-align:center;padding:14px 36px;border-right:1px solid rgba(255,255,255,0.07);">
+      <span style="font-family:Georgia,serif;font-size:2.3rem;font-weight:900;color:#C9A84C;display:block;line-height:1;">+89 pts</span>
+      <span style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:6px;display:block;line-height:1.4;">Danielle R. — 5 months<br>Medical collection removed</span>
+    </div>
+    <div style="text-align:center;padding:14px 36px;border-right:1px solid rgba(255,255,255,0.07);">
+      <span style="font-family:Georgia,serif;font-size:2.3rem;font-weight:900;color:#C9A84C;display:block;line-height:1;">+112 pts</span>
+      <span style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:6px;display:block;line-height:1.4;">Raymond S. — 8 months<br>SBA loan approved</span>
+    </div>
+    <div style="text-align:center;padding:14px 36px;">
+      <span style="font-family:Georgia,serif;font-size:2.3rem;font-weight:900;color:#C9A84C;display:block;line-height:1;">48 hrs</span>
+      <span style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:6px;display:block;line-height:1.4;">Avg delivery time<br>upload to roadmap</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 3: TRUST ══ -->
+<section id="trust">
+  <div class="container">
+    <span class="section-label" style="color:var(--navy);">Who Is Behind This</span>
+    <h2 class="trust-headline fade-in">I Had a 500-Something Credit Score, a Failing Credit Repair Subscription, and a Front-Row Seat to What Good Credit Actually Gets You.</h2>
+    <div class="trust-copy fade-in">
+      <p>A few years ago I was in the 500s. Not because I was irresponsible — because a business partnership ended badly, the way some of them do, and my credit absorbed the impact. Two of my cards were functionally cancelled. The accounts that stayed open were capped at whatever I owed, so I couldn't use them. I couldn't get a new loan. I couldn't get a new card. I was frozen.</p>
+      <p>So I did what most people do. I paid a credit repair company. I signed the contract, paid the monthly fee, waited for the letters to go out, and watched my mailbox for results. For nine months — closer to a year — I paid them. And at the end of it I still had derogatory accounts on my report. Same score. Same denials. Just less money in my pocket and a lot less patience.</p>
+      <p>Here's what made it worse: <strong>I was in the lending business.</strong> Every day I sat across from customers with excellent credit, approved for loans at rates I couldn't qualify for myself. I watched what good credit opened up for people — the houses, the rates, the options. I wasn't just frustrated. I was jealous. And I was determined to figure out what the credit repair company I'd been paying was either unwilling or unable to do.</p>
+      <p>So I researched. Deeply. I learned how the bureaus actually operate, how creditors report, what the FCRA and FDCPA actually require, and which specific approaches move scores versus which ones generate activity without results. I applied what I learned to my own report. My credit recovered. Then I started applying it to my lending customers — the ones who came to me wanting to buy a house but couldn't qualify at a rate that made sense. <strong>Helping them get there, watching them close on homes they'd been told they couldn't afford, became the most satisfying part of the work.</strong></p>
+      <p>Credit Cleared exists because that process — the real one, the specific one, the one that actually works — shouldn't require a year of monthly payments to a company that's running the same template on your file as everyone else's.</p>
+      <div class="trust-badge">
+        <div class="trust-badge-item">
+          <span class="badge-num">9+ mo</span>
+          <span class="badge-label">Paid a credit repair company — got nothing. Built this instead.</span>
+        </div>
+        <div class="trust-badge-item">
+          <span class="badge-num">Lending</span>
+          <span class="badge-label">Industry background — I've seen credit from both sides of the desk.</span>
+        </div>
+        <div class="trust-badge-item">
+          <span class="badge-num">Real</span>
+          <span class="badge-label">Rebuilt my own credit first. Then helped my customers do the same.</span>
+        </div>
+      </div>
+      <p class="closer" style="color:var(--navy);border-top-color:rgba(10,22,40,0.12);"><em>Now let me show you exactly why most approaches fail — and what makes this one different.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 4: SKEPTICISM ══ -->
+<section id="skepticism">
+  <div class="container">
+    <span class="section-label">Does This Actually Work?</span>
+    <h2 class="skepticism-headline fade-in">You Should Be Skeptical. The Credit Space Is Full of People Who Take Your Money and Move Numbers Around Until You Give Up.</h2>
+    <div class="skepticism-copy fade-in">
+      <p>Most credit repair services do one thing: send generic dispute letters to the bureaus and wait. They dispute everything at once, use the same template for every client, and call it a strategy. Sometimes a bureau removes something. Usually they don't. The client waits 45 days, sees nothing change, and quietly concludes that their credit is just broken.</p>
+      <p>That's not a Credit Cleared problem. <strong>That's a sequence problem.</strong></p>
+      <div class="mechanism-box">
+        <p>Here's what actually moves credit scores: <strong>the right action, on the right account, in the right order, with the right language, directed at the right entity.</strong> A collection doesn't get the same approach as a charge-off. A late payment on a current account doesn't get disputed — it gets a goodwill letter addressed to a specific person in a specific department. A medical collection gets a debt validation letter before anything else happens, because 30% of them can't be verified and get removed without a single dollar changing hands.</p>
+      </div>
+      <p>Generic advice skips all of that. It treats your report like every other report and produces generic results — which usually means no results.</p>
+      <p>What Credit Cleared does differently is start with <em>your</em> report. Not a template. Not a course. Your actual accounts, your actual creditors, your actual balances and dates and statuses. From that, a prioritized action plan is built — not by algorithm, but by someone who knows which creditor responds to what, which department actually has negotiating authority, and which sequence of actions protects you legally while maximizing your removal probability.</p>
+      <p>The reason this works when other approaches don't isn't complicated. <strong>The credit system operates by rules, and those rules are specific.</strong> The FCRA gives you the right to dispute inaccurate information directly with the bureaus. The FDCPA governs exactly how collectors are allowed to behave — and gives you specific tools to challenge them. HIPAA creates leverage on medical debt that most people never know exists. These aren't loopholes or tricks. <strong>They're federal rights you already own.</strong> Credit Cleared shows you how to use them correctly — for your accounts, not someone else's. Not through a middleman. Directly, legally, and permanently.</p>
+      <p class="closer"><em>The next section walks you through exactly how the process works from the moment you purchase to the moment your roadmap is in your hands.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 5: HOW IT WORKS ══ -->
+<section id="how-it-works">
+  <div class="container">
+    <span class="section-label">The Process</span>
+    <h2 class="how-headline fade-in">Here's Exactly What Happens From the Moment You Purchase to the Moment Your Score Starts Moving.</h2>
+    <div class="steps-grid fade-in">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h3>Purchase & Upload</h3>
+          <p>You purchase Credit Cleared and within minutes you receive an email with one instruction: upload your credit report. If you don't have it yet, we point you to exactly where to get all three bureaus on a single page for free. That's it. That's your entire job at this stage.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h3>Full Account Analysis</h3>
+          <p>Your report goes through a complete account-by-account analysis. Every negative item is identified and categorized — late payments, collections, charge-offs, hard inquiries, errors, medical debt. Each one gets assessed for removal probability, score impact, and the correct legal mechanism to use. Then they get ranked by what moves your score most, fastest, with the highest likelihood of success.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h3>Your Roadmap — Delivered in 48 Hours</h3>
+          <p>Within 48 hours of receiving your report, your personalized roadmap lands in your inbox. For every creditor on your report, you get the direct recovery department phone number, the name of who to ask for, a word-for-word call script, and the letter that goes out if the call doesn't produce results. Every letter is written and ready. You print them. You mail them.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h3>Follow the Map</h3>
+          <p>Work the roadmap in order. One account at a time, one action at a time, with a month-by-month milestone map that tells you exactly where you should be at each stage. Bureaus operate on 30 to 45 day cycles — your roadmap is built around those cycles so every action lands at the right moment in the right window.</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- SKIMMABLE DELIVERABLES -->
+    <p style="font-family:'DM Sans',sans-serif;font-size:0.7rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin:32px 0 16px;">What You Receive</p>
+    <div class="deliverables-grid fade-in">
+      <div class="deliverable-item"><span class="di-check">✓</span><div class="di-text"><strong>Account Priority Map</strong>Every negative item ranked by impact and removal probability</div></div>
+      <div class="deliverable-item"><span class="di-check">✓</span><div class="di-text"><strong>Direct Creditor Numbers</strong>Recovery department contacts — not the main 800 line</div></div>
+      <div class="deliverable-item"><span class="di-check">✓</span><div class="di-text"><strong>Word-for-Word Call Scripts</strong>Exactly what to say, tailored to your account</div></div>
+      <div class="deliverable-item"><span class="di-check">✓</span><div class="di-text"><strong>Dispute Letters — Ready to Mail</strong>Written, personalized. You print and sign.</div></div>
+      <div class="deliverable-item"><span class="di-check">✓</span><div class="di-text"><strong>Goodwill Letters</strong>For late payments on current accounts</div></div>
+      <div class="deliverable-item"><span class="di-check">✓</span><div class="di-text"><strong>Debt Validation Letters</strong>30% of medical collections removed at this step alone</div></div>
+      <div class="deliverable-item"><span class="di-check">✓</span><div class="di-text"><strong>Month-by-Month Milestone Map</strong>3–9 month timeline with clear milestones</div></div>
+      <div class="deliverable-item"><span class="di-check">✓</span><div class="di-text"><strong>48-Hour Delivery</strong>From report upload to roadmap in your inbox</div></div>
+    </div>
+
+    <div class="how-copy fade-in">
+      <p>For clients with a harder situation or a tighter timeline, the Done-With-You Intensive puts an expert directly alongside you for every difficult call, every negotiation, and every escalation — so nothing stalls because you weren't sure what to do next.</p>
+      <p><strong>At every stage, you are the one taking the action.</strong> That's not a limitation — it's the point. You're not paying a company to exercise your rights for you. You're learning to exercise them yourself, with every tool prepared and every step mapped in advance.</p>
+      <p class="closer"><em>You now know exactly what you're getting and exactly how it works. The only question left is whether the investment makes sense — and that answer is coming up next.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 6: PRICE ══ -->
+<section id="price">
+  <div class="container">
+    <span class="section-label" style="color:var(--navy);">Investment</span>
+    <h2 class="price-headline fade-in">You're Already Paying Far More Than This. You Just Don't See the Invoice.</h2>
+    <div class="price-copy fade-in">
+      <p>Every month your credit score stays where it is, you're paying a penalty. It's in your car insurance premium — statistically 50 to 100 percent higher than it should be. It's in the interest rate on any balance you're carrying. It's in the security deposit you paid that your neighbor didn't. It's in the rate you got on your last car loan versus the rate someone with a 720 got on the same vehicle, same dealer, same day.</p>
+      <p>One successful pay-for-delete negotiation on a single collection account — the kind your roadmap walks you through word for word — can move your score enough to drop you into a lower insurance tier. That one change, on one policy, saves most people $400 to $800 a year. Every year. <strong>The roadmap pays for itself in the first billing cycle it works.</strong></p>
+    </div>
+    <div class="price-cards fade-in">
+      <div class="price-card featured">
+        <div class="price-card-name">Personalized Roadmap</div>
+        <div class="price-amount"><sup>$</sup>297</div>
+        <div class="price-once">one-time payment</div>
+        <ul class="price-features">
+          <li>Full account-by-account credit analysis</li>
+          <li>Every account ranked by score impact</li>
+          <li>Direct creditor phone numbers &amp; departments</li>
+          <li>Word-for-word call scripts for each account</li>
+          <li>Personalized dispute &amp; goodwill letters — ready to print &amp; mail</li>
+          <li>Debt validation letters where applicable</li>
+          <li>Month-by-month 3–9 month milestone map</li>
+          <li>Delivered within 48 hours of report upload</li>
+        </ul>
+        <a href="#" class="btn-primary" style="display:block;text-align:center;padding:18px;">Get My Roadmap — $297 →</a>
+      </div>
+      <div class="price-card premium">
+        <div class="price-card-badge">For Urgent Timelines</div>
+        <div class="price-card-name" style="color:rgba(255,255,255,0.45);">Done-With-You Intensive</div>
+        <div class="price-amount"><sup>$</sup>1,997</div>
+        <div class="price-once">one-time payment</div>
+        <ul class="price-features">
+          <li>Everything in the Roadmap</li>
+          <li>1-on-1 strategy call within 24 hours</li>
+          <li>Expert guidance on charge-offs, judgments &amp; collections</li>
+          <li>Aggressive sequencing for deadline situations</li>
+          <li>Weekly strategy calls throughout active period</li>
+          <li>Direct access between sessions</li>
+          <li>Priority turnaround on all letters &amp; scripts</li>
+          <li>Best for: closing dates, loan applications, leases</li>
+        </ul>
+        <a href="#" style="display:block;text-align:center;padding:18px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);font-weight:700;border-radius:4px;text-decoration:none;font-size:1rem;">Apply for the Intensive — $1,997 →</a>
+      </div>
+    </div>
+    <div class="price-copy fade-in">
+      <p>Think about what $297 buys in a normal week without a second thought. A car payment. A dinner out with the family. Three months of a streaming service you barely use. Now think about what $297 buys here — a complete analysis of your specific credit report, every creditor contact you need, every script written for your exact situation, every letter drafted and ready to send, and a month-by-month map of exactly what to do until your score is where it needs to be.</p>
+      <p><strong>The question was never whether you can afford Credit Cleared. The question is how much longer you can afford not to have it.</strong></p>
+      <p class="closer" style="color:var(--navy);border-top-color:rgba(10,22,40,0.1);"><em>Still on the fence? The next section is for you specifically.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 7: DON'T NEED IT ══ -->
+<section id="dont-need-it">
+  <div class="container">
+    <span class="section-label">The Cost of Comfortable</span>
+    <h2 class="dont-headline fade-in">"Fine" Is the Most Expensive Word in Your Financial Vocabulary.</h2>
+    <div class="dont-copy fade-in">
+      <p>Most people reading this page don't have a crisis. They have a gap. The score isn't catastrophic — it's just not good enough. Not good enough for the rate they want. Not good enough for the house they've been thinking about. Not good enough to stop the quiet, background anxiety that shows up every time a financial decision is on the table. They've been living in that gap so long it started to feel normal.</p>
+      <p>It isn't normal. <strong>It's expensive.</strong></p>
+    </div>
+    <div class="two-futures fade-in">
+      <div class="future-card without">
+        <h3>If Nothing Changes</h3>
+        <ul>
+          <li>Same score. Same rates. Same premiums.</li>
+          <li>Same hesitation before every application</li>
+          <li>Same watching others qualify for what you want</li>
+          <li>Another year of paying the penalty</li>
+          <li>A "better moment" that never quite arrives</li>
+          <li>Slow, steady, invisible financial drain</li>
+        </ul>
+      </div>
+      <div class="future-card with">
+        <h3>With Credit Cleared</h3>
+        <ul>
+          <li>Accounts addressed in the right order</li>
+          <li>A score that moves — methodically, with a map</li>
+          <li>Insurance premiums that drop when you hit the next tier</li>
+          <li>Loan applications submitted without holding your breath</li>
+          <li>A lender who sees a different number</li>
+          <li>A financial life that looks like what you planned</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dont-copy fade-in">
+      <p>The only difference between those two futures is a decision you're about to make or not make on this page today.</p>
+      <p class="closer"><em>If the hesitation is about risk — what if it doesn't work, what if I do something wrong — the next section covers that directly.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 8: EDUCATION ══ -->
+<section id="education">
+  <div class="container">
+    <span class="section-label">Why This Works</span>
+    <h2 class="edu-headline fade-in">Every Dollar You've Ever Paid a Credit Repair Company Was a Dollar You Paid Someone to Use Rights That Already Belonged to You.</h2>
+    <div class="edu-copy fade-in">
+      <p>Here's something the credit repair industry would prefer you didn't know. The letters they send on your behalf — the dispute letters, the debt validation letters, the goodwill letters — are not proprietary tools. They are not special. They are not the product of some insider knowledge that civilians can't access.</p>
+      <p><strong>They are rights. Federal rights. Written into law specifically to protect you.</strong></p>
+    </div>
+    <div class="edu-law-bar fade-in">
+      <div class="edu-law-item">
+        <span class="law-name">FCRA</span>
+        <span class="law-desc">The Fair Credit Reporting Act gives you the right to dispute inaccurate information directly with every bureau — at no cost, with no intermediary required.</span>
+      </div>
+      <div class="edu-law-item">
+        <span class="law-name">FDCPA</span>
+        <span class="law-desc">The Fair Debt Collection Practices Act governs exactly how collectors are allowed to behave — and gives you specific tools to challenge debts and demand validation.</span>
+      </div>
+      <div class="edu-law-item">
+        <span class="law-name">HIPAA</span>
+        <span class="law-desc">Creates specific leverage on medical debt that most people never know exists — and that most credit repair companies never use on your behalf.</span>
+      </div>
+    </div>
+    <div class="edu-copy fade-in">
+      <p>These laws were written for you, not for a company charging you a monthly fee to exercise them on your behalf.</p>
+      <p>What Credit Cleared does is fundamentally different. We don't act on your behalf. We don't send letters in your name. We don't insert ourselves between you and your creditors. <strong>What we do is show you — specifically, for your accounts, in your situation — exactly how to use the rights you already have.</strong> The letters are yours. The calls are yours. The results are yours.</p>
+      <p>That distinction matters legally. It matters ethically. And it matters practically — because when you understand what you're doing and why, you don't just fix your credit once. You understand how to protect it, maintain it, and use it strategically for the rest of your financial life.</p>
+    </div>
+    <div class="edu-vs fade-in">
+      <div class="edu-vs-card old">
+        <h3>Credit Repair Company</h3>
+        <ul>
+          <li>Monthly fees for as long as you're a client</li>
+          <li>Generic letters sent in your name</li>
+          <li>You wait. They act. You hope.</li>
+          <li>Service ends when you stop paying</li>
+          <li>You learn nothing about the process</li>
+          <li>Same template for every client</li>
+        </ul>
+      </div>
+      <div class="edu-vs-card new">
+        <h3>Credit Cleared</h3>
+        <ul>
+          <li>One-time investment — yours to keep</li>
+          <li>Your specific accounts, your specific letters</li>
+          <li>You act. Using rights you already own.</li>
+          <li>Knowledge that stays with you permanently</li>
+          <li>You understand every step and why it works</li>
+          <li>Built around your report, nobody else's</li>
+        </ul>
+      </div>
+    </div>
+    <div class="edu-copy fade-in">
+      <p>A credit repair company gives you a service. <strong>Credit Cleared gives you a permanent education.</strong></p>
+      <div class="pull-quote">The next section is for the people who are ready — and the ones who almost talked themselves out of it.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TESTIMONIALS ══ -->
+<section style="background:var(--navy-light);padding:70px 0;">
+  <div class="container">
+    <span class="section-label text-center" style="display:block;text-align:center;">Results</span>
+    <div class="testimonials fade-in">
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"I had a Capital One charge-off dragging my score down for years. The roadmap had the exact number to call and the exact script. They agreed to a pay-for-delete. Four months later I'm up 74 points."</p>
+        <div class="testimonial-author">Marcus T.</div>
+        <div class="testimonial-result">+74 points in 4 months</div>
+      </div>
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Got denied for an apartment because of a medical collection I didn't even know was on my report. Sent the debt validation letter from the roadmap. Collection removed two months later. Approved for a better apartment."</p>
+        <div class="testimonial-author">Danielle R.</div>
+        <div class="testimonial-result">+89 points in 5 months</div>
+      </div>
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"I had 6 weeks before my home closing. The Intensive helped me figure out exactly what to tackle first. I got close enough that the lender worked with me. Worth every penny."</p>
+        <div class="testimonial-author">Renee D.</div>
+        <div class="testimonial-result">Hit qualifying score before closing</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 9: PROCRASTINATION ══ -->
+<section id="procrastination">
+  <div class="container">
+    <span class="section-label" style="color:var(--navy);">One Last Thing</span>
+    <h2 class="proc-headline fade-in">You've Said "I'll Deal With It Later" Before. How Did That Work Out?</h2>
+    <div class="proc-copy fade-in">
+      <p>Not as an accusation. As an honest question worth sitting with for a moment. Because most people who land on a page like this have been aware of their credit situation for a while. Months. Sometimes years. They've meant to look into it. They've told themselves they'd start after the holidays, after the move, after things settled down. And here they are — still here, still aware, still not started.</p>
+      <p>That's not a character flaw. <strong>It's a pattern. And the pattern has a cost.</strong></p>
+      <p>Every month this stays on your list instead of in progress is another month of the same insurance rate, the same hesitation before applying for anything, the same gap between where you are and where you want to be. The score doesn't improve because you intended to work on it. It improves because someone worked on it — specifically, in order, with the right language, directed at the right people.</p>
+      <p>The people who got results didn't wait until conditions were perfect. They didn't wait until they had more time, more money, more certainty that it would work. They made one decision — to stop treating this as a future problem — and everything that followed came from that single moment.</p>
+      <p>That moment is available to you right now. Not tomorrow. Not after you think about it more. Right now, with the same information you already have, you can either close this page and add it to the list of things you meant to do — or you can do the one thing that's different from every other time you've been here.</p>
+    </div>
+    <div class="proc-cta fade-in">
+      <a href="#" class="btn-primary">Get My Credit Cleared Roadmap — $297 →</a>
+      <p>Report analysis begins within 24 hours of upload.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 10: COST OF INACTION ══ -->
+<section id="cost-of-inaction">
+  <div class="container">
+    <span class="section-label">The Final Word</span>
+    <h2 class="inaction-headline fade-in">Every Day You Wait Has a Price. It Just Doesn't Show Up as a Line Item.</h2>
+    <div class="inaction-copy fade-in">
+      <p>It shows up as the difference between what you paid for car insurance this month and what you would have paid with a better score. It shows up in the interest accumulating on a balance you're carrying at a rate you didn't have to accept. It shows up in the apartment you didn't get, the loan you didn't apply for, the opportunity you quietly talked yourself out of because you already knew what the answer would be.</p>
+      <p>That's not a future cost. <strong>That's today. That's this month. That's every month this stays unresolved.</strong></p>
+      <p>Twelve months from now you will either be someone who started — who has accounts addressed, letters sent, a score moving in a direction that opens doors instead of closing them — or you will be exactly where you are right now, having spent another year paying the penalty and meaning to get around to it.</p>
+      <p>There is no neutral. Every day without a plan is a day the plan isn't working.</p>
+      <p>The cost of Credit Cleared is $297. The cost of not having it is every inflated premium, every rejected application, every rate you accepted because you didn't think you could do better, every month between now and the day you finally decide enough is enough — added together, compounded, and subtracted quietly from a financial life that was supposed to look different than this by now.</p>
+      <div class="final-line">
+        You already know what staying here costs. You've been paying it.
+      </div>
+      <p style="text-align:center;font-size:1.1rem;color:rgba(255,255,255,0.7);margin-top:32px;">The only thing left to do is stop.</p>
+    </div>
+    <div class="final-cta fade-in">
+      <a href="#" class="btn-primary" style="font-size:1.15rem;padding:22px 56px;">Get Credit Cleared — $297 →</a>
+      <br><br>
+      <a href="#" class="btn-secondary">Done-With-You Intensive — $1,997 →</a>
+      <p>🔒 Secure checkout · Stripe · Educational service · Your federal rights, fully explained</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container-wide footer-inner">
+    <div class="footer-logo">Credit<span>Cleared</span></div>
+    <div class="footer-legal">
+      Credit Cleared provides educational and informational services only. We are not a credit repair organization as defined under the Credit Repair Organizations Act. All actions taken on your credit report are performed by you using your rights under the FCRA and FDCPA. Individual results vary and are not guaranteed.
+    </div>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Fade-in on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Staggered children
+document.querySelectorAll('.steps-grid .step, .two-futures .future-card, .testimonials .testimonial').forEach((el, i) => {
+  el.style.transitionDelay = `${i * 0.1}s`;
+  el.classList.add('fade-in');
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
