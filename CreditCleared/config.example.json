@@ -16,6 +16,7 @@
 
   "upload_page_url": "[YOUR UPLOAD PAGE URL]",
   "formspree_secret": "[FORMSPREE WEBHOOK SECRET]",
+  "formspree_signature_header": "X-Formspree-Signature",
   "webhook_port": 8080,
 
   "delivery_delay_hours": 24,
