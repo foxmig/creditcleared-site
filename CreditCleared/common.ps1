@@ -67,7 +67,7 @@ function New-JobId {
     return "$timestamp-$slug"
 }
 
-function Expand-EmailTemplate {
+function Expand-Template {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$TemplatePath,
@@ -75,7 +75,7 @@ function Expand-EmailTemplate {
     )
 
     if (-not (Test-Path -LiteralPath $TemplatePath)) {
-        throw "Email template not found at '$TemplatePath'."
+        throw "Template not found at '$TemplatePath'."
     }
 
     $body = Get-Content -LiteralPath $TemplatePath -Raw
@@ -213,6 +213,45 @@ function Test-FormspreeSignature {
         $diff = $diff -bor ([byte][char]$computed[$i] -bxor [byte][char]$SignatureHeaderValue.Trim()[$i])
     }
     return ($diff -eq 0)
+}
+
+function Invoke-ClaudeMessage {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]$Config,
+        [Parameter(Mandatory)][string]$SystemPrompt,
+        [Parameter(Mandatory)][array]$Messages,
+        [int]$MaxTokens = 4096,
+        [double]$Temperature = 0.3
+    )
+
+    $bodyObj = @{
+        model       = $Config.claude_model
+        max_tokens  = $MaxTokens
+        temperature = $Temperature
+        system      = $SystemPrompt
+        messages    = $Messages
+    }
+    $bodyJson = $bodyObj | ConvertTo-Json -Depth 12
+
+    $headers = @{
+        'x-api-key'         = $Config.anthropic_api_key
+        'anthropic-version' = '2023-06-01'
+    }
+
+    # Section 8: "Claude API call fails (timeout or error) -> Retry once after
+    # 60 seconds. If still failing, move job to failed\ and email alert."
+    $maxAttempts = 2
+    for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+        try {
+            return Invoke-RestMethod -Uri 'https://api.anthropic.com/v1/messages' -Method Post `
+                -Headers $headers -ContentType 'application/json' -Body $bodyJson -TimeoutSec 300
+        } catch {
+            if ($attempt -ge $maxAttempts) { throw }
+            Write-Warning "Claude API call failed (attempt $attempt of $maxAttempts): $_. Retrying in 60 seconds..."
+            Start-Sleep -Seconds 60
+        }
+    }
 }
 
 function Get-CreditReportBytes {

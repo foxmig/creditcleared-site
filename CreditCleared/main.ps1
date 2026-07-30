@@ -150,7 +150,7 @@ function Invoke-WebhookRequest {
     if ($TestMode) { $subject = "[TEST] $subject" }
 
     try {
-        $bodyHtml = Expand-EmailTemplate -TemplatePath $confirmationTemplate -Tokens @{
+        $bodyHtml = Expand-Template -TemplatePath $confirmationTemplate -Tokens @{
             CLIENT_FIRST_NAME = $firstName
             YOUR_NAME         = $Config.your_name
             YOUR_PHONE        = $Config.your_phone

@@ -1,0 +1,146 @@
+Analyze the attached credit report for {{CLIENT_FIRST_NAME}} {{CLIENT_LAST_NAME}}.
+
+CLIENT CONTEXT:
+
+- Primary goal: {{GOAL_FROM_FORM}}
+
+- Deadline or target date: {{DEADLINE_FROM_FORM}}
+
+- Additional notes from client: {{NOTES_FROM_FORM}}
+
+Produce the following sections in your response. Use the exact section headers shown.
+
+Be specific to the accounts on THIS report. Do not use generic examples.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CREDIT CLEARED ANALYSIS — {{CLIENT_FIRST_NAME}} {{CLIENT_LAST_NAME}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXECUTIVE SUMMARY
+─────────────────────────────────────────────────────
+Client Name: [Name]
+Credit Scores: EX: XXX / EQ: XXX / TU: XXX
+Total Negative Items: X
+Estimated Score Gain (if all items resolved): +XX to +XXX points
+Estimated Timeline to Goal: X months
+Goal Assessment: [Assessment of whether goal is achievable in client's timeframe]
+
+SECTION 1: ACCOUNT SUMMARY
+─────────────────────────────────────────────────────
+List every negative account. For each provide:
+- Creditor name and account type
+- Balance and date of first delinquency
+- Estimated fall-off date (7 years from first delinquency)
+- Recommended action: DISPUTE / PAY-FOR-DELETE / GOODWILL / VALIDATION / IGNORE
+- Priority ranking (1 = tackle first)
+- Estimated score impact if removed: +XX points
+
+SECTION 2: PRIORITY ACTION PLAN
+─────────────────────────────────────────────────────
+Rank every account by: score impact + removal probability + urgency given client deadline.
+Explain exactly why each account is ranked where it is.
+Provide the specific strategy for each account in sequence.
+If client has a deadline, front-load highest-impact actions.
+
+SECTION 3: CREDITOR CONTACT DIRECTORY
+─────────────────────────────────────────────────────
+For every account requiring contact provide:
+- Creditor or collector name
+- Direct phone number for recovery/special assets department (NOT main 800 line)
+- Department name to ask for
+- Best days and times to call
+- Key notes for this specific creditor
+
+SECTION 4: WORD-FOR-WORD CALL SCRIPTS
+─────────────────────────────────────────────────────
+For every account requiring a phone call provide a complete script:
+- Opening statement (who to ask for, why you're calling)
+- What to say when they ask for more information
+- How to handle the 3 most common pushback responses
+- How to request pay-for-delete where applicable
+- Closing statement
+- What to do if they refuse — next steps
+
+SECTION 5: DISPUTE LETTERS
+─────────────────────────────────────────────────────
+For every account qualifying for bureau dispute, write complete personalized FCRA letters.
+Each letter must include:
+- Client name and address placeholders: [CLIENT_NAME], [CLIENT_ADDRESS], [CLIENT_CITY_STATE_ZIP]
+- Specific account name, number, and details from the report
+- Specific reason for dispute
+- Legal basis under FCRA Section 611
+- Clear request for deletion or correction
+- Certified mail instruction
+Write three versions: Equifax, Experian, and TransUnion with correct bureau addresses.
+
+SECTION 6: GOODWILL LETTERS
+─────────────────────────────────────────────────────
+For every late payment on a currently active account in good standing:
+Write a personalized goodwill letter addressed to the specific creditor.
+Include: specific account, late payment dates, circumstances, and goodwill request.
+Note: success rate is approximately 30-40% — set realistic expectations.
+
+SECTION 7: DEBT VALIDATION LETTERS
+─────────────────────────────────────────────────────
+For every collection account, write a personalized FDCPA Section 809 debt validation letter.
+Each letter must request:
+- Original creditor name and address
+- Original signed credit agreement
+- Complete account history with all charges and payments
+- Proof of collection authority and license in client's state
+Note which collections are most likely to be removed at this step (older, medical, resold debts).
+
+SECTION 8: INQUIRY CROSS-REFERENCE ANALYSIS
+─────────────────────────────────────────────────────
+For EVERY hard inquiry on the report, apply the 45-day rule:
+1. Note lender name and inquiry pull date
+2. Check if there is an open account with the same lender
+3. Check if that account was opened within 45 days of the inquiry
+   - If YES: Legitimate — cannot dispute
+   - If NO: DISPUTABLE — orphan inquiry
+
+Output an Inquiry Cross-Reference Table:
+| Lender | Pull Date | Matching Account | Account Opened | Disputable? |
+
+For every disputable inquiry, include an inquiry removal letter.
+
+SECTION 9: MONTH-BY-MONTH MILESTONE MAP
+─────────────────────────────────────────────────────
+Create a month-by-month action calendar for up to 9 months.
+Account for 30-45 day bureau response cycles.
+If client has a deadline, sequence accordingly — front-load highest impact.
+Format:
+Month 1: [Specific actions — who to contact, what to send]
+Month 2: [Follow-up actions — what to do with responses]
+Month 3: [Next dispute cycle or escalations]
+...continue through resolution
+
+SECTION 10: PERSONAL CREDIT PROFILE BUILDING
+─────────────────────────────────────────────────────
+Once negative items are addressed, what should the client do to build a strong profile?
+Include:
+- Current utilization analysis and target ratios for each card
+- Account mix assessment — what types are missing
+- Credit age analysis — what to keep open, what to avoid closing
+- Specific products to consider for building profile depth
+  (credit builder loans, secured cards, authorized user strategy)
+- Statement closing date optimization for fastest score reporting
+- What lenders see beyond the score — profile vs. score distinction
+- Milestones to hit before applying for major credit
+
+SECTION 11: EDUCATIONAL SUMMARY
+─────────────────────────────────────────────────────
+Plain-language explanation of:
+- Client's rights under the FCRA
+- Client's rights under the FDCPA
+- How the dispute process works and what to expect
+- How long negative items stay on reports
+- What to expect from creditors and bureaus
+- How to protect their credit going forward
+
+─────────────────────────────────────────────────────
+Credit Cleared provides educational and informational services only.
+Not a credit repair organization as defined under CROA.
+All actions are performed by the client using rights under the FCRA and FDCPA.
+Individual results vary and are not guaranteed.
+─────────────────────────────────────────────────────
