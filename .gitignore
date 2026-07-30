@@ -6,3 +6,7 @@ CreditCleared/jobs/**
 CreditCleared/logs/**
 !CreditCleared/logs/**/
 !CreditCleared/logs/**/.gitkeep
+
+# Python
+CreditCleared/__pycache__/
+*.pyc
