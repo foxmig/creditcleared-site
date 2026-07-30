@@ -1,0 +1,31 @@
+{
+  "anthropic_api_key": "sk-ant-xxxxxxxxxx",
+  "claude_model": "claude-sonnet-4-6",
+  "consumer_analysis_max_tokens": 8000,
+  "funding_analysis_max_tokens": 4000,
+  "temperature": 0.3,
+
+  "gmail_address": "you@creditcleared.com",
+  "gmail_app_password": "xxxx xxxx xxxx xxxx",
+
+  "your_name": "[YOUR NAME]",
+  "your_phone": "[YOUR PHONE]",
+  "your_email": "you@creditcleared.com",
+  "business_name": "Silver Indigo LLC",
+  "business_dba": "Credit Cleared",
+
+  "upload_page_url": "[YOUR UPLOAD PAGE URL]",
+  "formspree_secret": "[FORMSPREE WEBHOOK SECRET]",
+  "webhook_port": 8080,
+
+  "delivery_delay_hours": 24,
+  "delivery_time_hour": 9,
+  "delivery_time_minute": 0,
+
+  "job_storage_path": ".\\jobs",
+  "log_path": ".\\logs",
+  "template_path": ".\\templates",
+
+  "funding_addon_price": 197,
+  "funding_addon_payment_link": "[STRIPE PAYMENT LINK FOR $197 FUNDING ADD-ON]"
+}

@@ -1,0 +1,8 @@
+# Credit Cleared automation — secrets and client data, never committed
+CreditCleared/config.json
+CreditCleared/jobs/**
+!CreditCleared/jobs/**/
+!CreditCleared/jobs/**/.gitkeep
+CreditCleared/logs/**
+!CreditCleared/logs/**/
+!CreditCleared/logs/**/.gitkeep
