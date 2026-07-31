@@ -277,9 +277,23 @@ function Get-CreditReportBytes {
             # WebClient.DownloadData reliably returns raw bytes for binary
             # content (a PDF) regardless of PowerShell version, unlike
             # Invoke-WebRequest's .Content, whose type varies by version.
+            #
+            # Windows PowerShell 5.1 (.NET Framework) defaults ServicePointManager
+            # to older SSL/TLS protocols and will silently fail the handshake
+            # against a TLS 1.2-only host. Force TLS 1.2 before connecting.
+            if (-not ([System.Net.ServicePointManager]::SecurityProtocol -band [System.Net.SecurityProtocolType]::Tls12)) {
+                [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
+            }
             $webClient = New-Object System.Net.WebClient
             try {
                 return $webClient.DownloadData($CreditReportField)
+            } catch {
+                # Don't let a transient download failure (expired signed URL,
+                # TLS/network hiccup, etc.) crash the whole webhook request --
+                # log the real reason and let the caller treat it as "no
+                # usable attachment", which alerts the operator instead.
+                Write-Warning "Failed to download credit report from '$CreditReportField': $_"
+                return $null
             } finally {
                 $webClient.Dispose()
             }

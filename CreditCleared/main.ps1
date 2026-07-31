@@ -20,7 +20,31 @@ $ErrorActionPreference = 'Stop'
 $ScriptRoot = $PSScriptRoot
 . (Join-Path $ScriptRoot 'common.ps1')
 
-$Config = Get-CreditClearedConfig -Path (Join-Path $ScriptRoot 'config.json')
+function Write-CrashLog {
+    # Last-resort logger for failures that happen before config is loaded, or
+    # that would otherwise have nowhere to go and fail completely silently
+    # (e.g. an exception escaping the main loop). Never throws itself.
+    param([string]$Message, $Config)
+
+    $logDir = if ($Config -and $Config.log_path) { $Config.log_path } else { Join-Path $ScriptRoot 'logs' }
+    try {
+        if (-not (Test-Path -LiteralPath $logDir)) {
+            New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+        }
+        $line = "[{0}] {1}" -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $Message
+        Add-Content -LiteralPath (Join-Path $logDir 'crash.log') -Value $line
+    } catch {
+        # If even the crash log can't be written, at least surface it on the console.
+        Write-Error "Write-CrashLog failed: $_"
+    }
+}
+
+try {
+    $Config = Get-CreditClearedConfig -Path (Join-Path $ScriptRoot 'config.json')
+} catch {
+    Write-CrashLog -Message "FATAL -- failed to load config.json: $($_.Exception.GetType().FullName): $_`n$($_.ScriptStackTrace)"
+    throw
+}
 $Port = [int]$Config.webhook_port
 $Stage = if ($TestMode) { 'test' } else { 'queued' }
 
@@ -90,23 +114,31 @@ function Invoke-WebhookRequest {
         return
     }
 
-    $firstName = $payload.first_name
-    $lastName = $payload.last_name
-    $email = if ($payload._replyto) { $payload._replyto } else { $payload.email }
+    # Formspree wraps the actual form fields under a "submission" object --
+    # {"form": "...", "submission": {first_name, email, credit_report, ...}}.
+    # Fall back to the top level too, in case a future Formspree payload (or
+    # the "Send test" button) ever sends the fields unwrapped.
+    $submission = if ($payload.PSObject.Properties.Name -contains 'submission') { $payload.submission } else { $payload }
+
+    $firstName = $submission.first_name
+    $lastName = $submission.last_name
+    $email = if ($submission._replyto) { $submission._replyto } else { $submission.email }
     $jobId = New-JobId -FirstName $firstName -LastName $lastName
 
     if ([string]::IsNullOrWhiteSpace($email)) {
         Write-Warning "Webhook payload for job '$jobId' has no client email -- cannot proceed."
+        Write-JobLog -JobId $jobId -LogPath $Config.log_path -Message "Webhook from $remoteIp rejected -- no usable client email (_replyto/email)."
         Send-OperatorAlert -Config $Config -Subject "$firstName $lastName -- webhook missing client email" `
             -Message "A Formspree submission came in without a usable email address (_replyto/email). Check manually.`n`nRaw payload:`n$bodyText"
         Send-HttpResponse -Context $Context -StatusCode 200 -Body 'Received (alert sent -- missing email)'
         return
     }
 
-    $reportBytes = Get-CreditReportBytes -CreditReportField $payload.credit_report
+    $reportBytes = Get-CreditReportBytes -CreditReportField $submission.credit_report
     if (-not $reportBytes -or $reportBytes.Length -eq 0) {
         # Section 8: "Webhook received but no PDF attachment" -- alert operator, do not proceed.
         Write-Warning "Job '$jobId' has no credit report attachment -- alerting operator, not creating job."
+        Write-JobLog -JobId $jobId -LogPath $Config.log_path -Message "Webhook from $remoteIp rejected -- no usable credit_report attachment for $email."
         Send-OperatorAlert -Config $Config -Subject "$firstName $lastName uploaded without PDF -- check manually" `
             -Message "Formspree submission from $email came in without a usable credit_report attachment.`n`nJob would have been: $jobId`n`nRaw payload:`n$bodyText"
         Send-HttpResponse -Context $Context -StatusCode 200 -Body 'Received (alert sent -- missing PDF)'
@@ -126,10 +158,10 @@ function Invoke-WebhookRequest {
             first_name = $firstName
             last_name  = $lastName
             email      = $email
-            phone      = $payload.phone
-            goal       = $payload.goal
-            deadline   = $payload.deadline
-            notes      = $payload.notes
+            phone      = $submission.phone
+            goal       = $submission.goal
+            deadline   = $submission.deadline
+            notes      = $submission.notes
         }
         files         = @{ report_pdf = 'report.pdf' }
         confirmation  = @{ sent_at = $null }
@@ -179,6 +211,7 @@ $listener.Prefixes.Add("http://+:$Port/webhook/")
 try {
     $listener.Start()
 } catch {
+    Write-CrashLog -Config $Config -Message "FATAL -- failed to start listener on port $Port`: $($_.Exception.GetType().FullName): $_`n$($_.ScriptStackTrace)"
     Write-Error "Failed to start listener on port $Port. On Windows this usually means the URL isn't reserved for your account or the port is in use. Try running as Administrator, or reserve the URL once with: netsh http add urlacl url=http://+:$Port/webhook/ user=Everyone`n$_"
     throw
 }
@@ -187,16 +220,31 @@ Write-Host "Credit Cleared webhook listener ready on port $Port$(if ($TestMode) 
 
 try {
     while ($listener.IsListening) {
-        $context = $listener.GetContext()
+        try {
+            $context = $listener.GetContext()
+        } catch {
+            Write-CrashLog -Config $Config -Message "FATAL -- listener.GetContext() failed, listener loop is exiting: $($_.Exception.GetType().FullName): $_`n$($_.ScriptStackTrace)"
+            throw
+        }
         try {
             Invoke-WebhookRequest -Context $context -Config $Config -TestMode:$TestMode -Stage $Stage
         } catch {
-            Write-Warning "Unhandled error processing webhook request: $_"
+            $errDetail = "Unhandled error processing webhook request: $($_.Exception.GetType().FullName): $_`n$($_.ScriptStackTrace)"
+            Write-Warning $errDetail
+            Write-CrashLog -Config $Config -Message $errDetail
             try {
                 Send-HttpResponse -Context $context -StatusCode 500 -Body 'Internal error'
             } catch {}
         }
     }
+} catch {
+    # Anything that escapes the per-request handling above (e.g. GetContext()
+    # failing) used to fall through this try with only a `finally` and no
+    # `catch` -- the process would exit with the listener loop simply ending,
+    # nothing written anywhere, nothing printed. Log it before it disappears.
+    Write-CrashLog -Config $Config -Message "FATAL -- main.ps1 is exiting due to an unhandled error: $($_.Exception.GetType().FullName): $_`n$($_.ScriptStackTrace)"
+    Write-Error "main.ps1 is exiting due to an unhandled error: $_"
+    throw
 } finally {
     $listener.Stop()
     $listener.Close()
