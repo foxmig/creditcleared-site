@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Your Credit Report — Credit Cleared</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0A1628;
+  --navy-mid: #0F2040;
+  --navy-light: #152847;
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --gold-pale: #FFF8E7;
+  --white: #FFFFFF;
+  --off-white: #F8F6F1;
+  --gray-light: #E8E4DC;
+  --gray-mid: #9A9488;
+  --gray-dark: #4A4640;
+  --red-accent: #8B2020;
+  --green-accent: #1A5C3A;
+  --text-body: #2C2820;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy);
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.7;
+}
+
+h1, h2 { font-family: 'Playfair Display', serif; line-height: 1.25; }
+
+.container-wide { max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+
+/* ── NAV (matches index.html) ── */
+.site-nav {
+  background: rgba(10,22,40,0.95);
+  backdrop-filter: blur(10px);
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(201,168,76,0.15);
+}
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--white);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+.nav-logo span { color: var(--gold); }
+.nav-trust { font-size: 0.73rem; color: rgba(255,255,255,0.4); }
+@media(max-width:580px){ .nav-trust { display:none; } }
+
+/* ── MAIN ── */
+main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 20px;
+}
+
+.upload-wrap { width: 100%; max-width: 460px; }
+
+.upload-header { text-align: center; margin-bottom: 32px; }
+.upload-header .section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+  display: block;
+}
+.upload-header h1 { font-size: 1.9rem; margin-bottom: 12px; }
+.upload-header p { color: rgba(255,255,255,0.6); font-size: 0.95rem; max-width: 380px; margin: 0 auto; }
+
+.upload-card {
+  background: var(--navy-light);
+  border: 1px solid rgba(201,168,76,0.18);
+  border-radius: 10px;
+  padding: 32px;
+}
+
+.field { margin-bottom: 20px; }
+.field label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 8px;
+  letter-spacing: 0.01em;
+}
+.field input[type="text"],
+.field input[type="email"],
+.field input[type="tel"] {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 5px;
+  padding: 13px 15px;
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+.field input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.field input::placeholder { color: rgba(255,255,255,0.3); }
+
+/* ── FILE DROPZONE ── */
+.dropzone {
+  border: 2px dashed rgba(255,255,255,0.2);
+  border-radius: 8px;
+  padding: 30px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.dropzone:hover { border-color: rgba(201,168,76,0.5); background: rgba(201,168,76,0.04); }
+.dropzone.has-file { border-color: var(--green-accent); background: rgba(26,92,58,0.12); border-style: solid; }
+.dropzone .dz-icon { font-size: 1.8rem; margin-bottom: 8px; }
+.dropzone .dz-text { font-size: 0.9rem; color: rgba(255,255,255,0.65); }
+.dropzone .dz-filename { font-size: 0.9rem; font-weight: 600; color: var(--gold-light); word-break: break-all; }
+.dropzone .dz-sub { font-size: 0.76rem; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+/* ── BUTTON (matches index.html .btn-primary) ── */
+.btn-submit {
+  display: block;
+  width: 100%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: var(--navy);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 16px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  box-shadow: 0 8px 30px rgba(201,168,76,0.3);
+  margin-top: 4px;
+}
+.btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(201,168,76,0.45); }
+.btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.form-note {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+  margin-top: 16px;
+  line-height: 1.5;
+}
+
+.alert {
+  border-radius: 6px;
+  padding: 12px 15px;
+  font-size: 0.85rem;
+  margin-bottom: 18px;
+  display: none;
+}
+.alert.show { display: block; }
+.alert-error {
+  background: rgba(139,32,32,0.15);
+  border: 1px solid rgba(139,32,32,0.4);
+  color: #E8A0A0;
+}
+
+/* ── SUCCESS STATE ── */
+.success-state { text-align: center; }
+.success-icon {
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  background: rgba(26,92,58,0.2);
+  border: 1px solid rgba(26,92,58,0.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+  color: #4ADE80;
+  margin: 0 auto 24px;
+}
+.success-state h1 { font-size: 1.7rem; margin-bottom: 14px; }
+.success-state p { color: rgba(255,255,255,0.6); font-size: 0.95rem; }
+
+/* ── FOOTER (matches index.html) ── */
+footer {
+  background: #060E1A;
+  padding: 28px 0;
+  border-top: 1px solid rgba(201,168,76,0.1);
+  text-align: center;
+}
+.footer-legal {
+  font-size: 0.73rem;
+  color: rgba(255,255,255,0.3);
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <div class="container-wide nav-inner">
+    <a href="index.html" class="nav-logo">Credit<span>Cleared</span></a>
+    <span class="nav-trust">🔒 Secure Upload · Encrypted in Transit</span>
+  </div>
+</nav>
+
+<main>
+  <div class="upload-wrap">
+
+    <!-- FORM STATE -->
+    <div id="form-state">
+      <div class="upload-header">
+        <span class="section-label">Step 2 of 2</span>
+        <h1>Upload Your Credit Report</h1>
+        <p>Upload the PDF of your 3-bureau credit report below. Our team will analyze it and generate your personalized dispute letters within 24–48 hours.</p>
+      </div>
+
+      <div class="upload-card">
+        <div id="form-error" class="alert alert-error"></div>
+
+        <!--
+          Replace YOUR_FORM_ID with your live Formspree endpoint
+          (https://formspree.io/f/YOUR_FORM_ID). Enable file uploads
+          for this form in the Formspree dashboard so the credit
+          report PDF is attached to the notification email.
+
+          Field names below intentionally match what the analysis
+          pipeline expects downstream (client name/email used for
+          the roadmap + dispute letters, phone for operator follow-up,
+          and the credit_report file that gets parsed for the Elite
+          Credit Analysis).
+        -->
+        <form id="upload-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" enctype="multipart/form-data">
+
+          <div class="field">
+            <label for="full_name">Full Name</label>
+            <input type="text" id="full_name" name="full_name" placeholder="Jane Smith" required>
+          </div>
+
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="jane@example.com" required>
+          </div>
+
+          <div class="field">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567" required>
+          </div>
+
+          <div class="field">
+            <label>Credit Report (PDF)</label>
+            <div class="dropzone" id="dropzone">
+              <input type="file" id="credit_report" name="credit_report" accept="application/pdf,.pdf" class="hidden" required>
+              <div id="dz-empty">
+                <div class="dz-icon">☁️</div>
+                <div class="dz-text">Click to select your credit report</div>
+                <div class="dz-sub">PDF format only, max 10MB</div>
+              </div>
+              <div id="dz-filled" class="hidden">
+                <div class="dz-icon">📄</div>
+                <div class="dz-filename" id="dz-filename"></div>
+                <div class="dz-sub">Click to change file</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Formspree config -->
+          <input type="hidden" name="_subject" value="New Credit Report Upload">
+          <input type="hidden" name="upload_token" id="upload_token" value="">
+
+          <button type="submit" class="btn-submit" id="submit-btn">Submit My Credit Report</button>
+
+          <p class="form-note">🔒 Your report is handled securely and used only to generate your personalized analysis and dispute letters.</p>
+        </form>
+      </div>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div id="success-state" class="success-state hidden">
+      <div class="success-icon">✓</div>
+      <h1>Report Received!</h1>
+      <p>We&rsquo;ve received your credit report and will begin your analysis now. In most cases, you&rsquo;ll receive your full analysis and dispute letters within 24&ndash;48 hours by email.</p>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container-wide footer-legal">
+    Credit Cleared provides educational and informational services only. We are not a credit repair organization as defined under the Credit Repair Organizations Act. Individual results vary and are not guaranteed.
+  </div>
+</footer>
+
+<script>
+(function () {
+  var form = document.getElementById('upload-form');
+  var dropzone = document.getElementById('dropzone');
+  var fileInput = document.getElementById('credit_report');
+  var dzEmpty = document.getElementById('dz-empty');
+  var dzFilled = document.getElementById('dz-filled');
+  var dzFilename = document.getElementById('dz-filename');
+  var submitBtn = document.getElementById('submit-btn');
+  var errorBox = document.getElementById('form-error');
+  var formState = document.getElementById('form-state');
+  var successState = document.getElementById('success-state');
+  var tokenField = document.getElementById('upload_token');
+
+  // Pass through ?token= from the onboarding email link, if present,
+  // so the operator can correlate this submission with the original order.
+  var params = new URLSearchParams(window.location.search);
+  var token = params.get('token');
+  if (token) tokenField.value = token;
+
+  dropzone.addEventListener('click', function () { fileInput.click(); });
+
+  fileInput.addEventListener('change', function () {
+    var file = fileInput.files[0];
+    if (!file) return;
+    if (file.type !== 'application/pdf') {
+      showError('Please upload a PDF file.');
+      fileInput.value = '';
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      showError('File is too large. Please upload a PDF under 10MB.');
+      fileInput.value = '';
+      return;
+    }
+    hideError();
+    dzEmpty.classList.add('hidden');
+    dzFilled.classList.remove('hidden');
+    dropzone.classList.add('has-file');
+    dzFilename.textContent = file.name;
+  });
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.classList.add('show');
+  }
+  function hideError() {
+    errorBox.classList.remove('show');
+    errorBox.textContent = '';
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    hideError();
+
+    if (!fileInput.files[0]) {
+      showError('Please select your credit report PDF before submitting.');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Uploading…';
+
+    var data = new FormData(form);
+
+    fetch(form.action, {
+      method: 'POST',
+      body: data,
+      headers: { Accept: 'application/json' }
+    }).then(function (response) {
+      if (response.ok) {
+        formState.classList.add('hidden');
+        successState.classList.remove('hidden');
+      } else {
+        return response.json().then(function (body) {
+          var msg = (body && body.errors && body.errors.map(function (e) { return e.message; }).join(', ')) || 'Upload failed. Please try again.';
+          throw new Error(msg);
+        });
+      }
+    }).catch(function (err) {
+      showError(err.message || 'Network error. Please check your connection and try again.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit My Credit Report';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
