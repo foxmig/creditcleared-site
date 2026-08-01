@@ -186,31 +186,46 @@ function Test-FormspreeSignature {
         [string]$SignatureHeaderValue
     )
 
-    # ASSUMPTION -- unverified against a real Formspree payload: this checks for
-    # an HMAC-SHA256 signature ("sha256=<hex>") the way Stripe/GitHub-style
-    # webhooks do, using formspree_secret as the HMAC key. Formspree may
-    # instead send the raw shared secret as a plain header value. CONFIRM the
-    # actual scheme using Formspree's "Send test" button (spec Section 9B) --
-    # inspect the incoming request headers logged below and adjust this
-    # function to match before relying on it for real traffic.
+    # Confirmed against a real webhook delivery. Formspree sends a
+    # "Formspree-Signature" header (note: no "X-" prefix) shaped like:
+    #   t=<unix-timestamp>,v1=<hex-hmac>
+    # The signed message is "{timestamp}.{raw_body}" (raw bytes, not
+    # re-serialized), HMAC-SHA256'd with the webhook secret and hex-encoded.
+    # The timestamp is included so replay of an old captured request can be
+    # rejected -- we enforce a 5 minute tolerance on it below.
     if ([string]::IsNullOrEmpty($SignatureHeaderValue)) { return $false }
+
+    $parts = @{}
+    foreach ($segment in $SignatureHeaderValue.Split(',')) {
+        $kv = $segment.Split('=', 2)
+        if ($kv.Count -eq 2) { $parts[$kv[0].Trim()] = $kv[1].Trim() }
+    }
+
+    $timestamp = $parts['t']
+    $signature = $parts['v1']
+    if ([string]::IsNullOrEmpty($timestamp) -or [string]::IsNullOrEmpty($signature)) { return $false }
+
+    $timestampSeconds = 0L
+    if (-not [long]::TryParse($timestamp, [ref]$timestampSeconds)) { return $false }
+    $requestTime = [DateTimeOffset]::FromUnixTimeSeconds($timestampSeconds)
+    $skew = [Math]::Abs(([DateTimeOffset]::UtcNow - $requestTime).TotalSeconds)
+    if ($skew -gt 300) { return $false }
+
+    $bodyText = [System.Text.Encoding]::UTF8.GetString($Body)
+    $signedPayloadBytes = [System.Text.Encoding]::UTF8.GetBytes("$timestamp.$bodyText")
 
     $hmac = New-Object System.Security.Cryptography.HMACSHA256([System.Text.Encoding]::UTF8.GetBytes($Secret))
     try {
-        $hash = $hmac.ComputeHash($Body)
+        $hash = $hmac.ComputeHash($signedPayloadBytes)
     } finally {
         $hmac.Dispose()
     }
-    $computed = 'sha256=' + (($hash | ForEach-Object { $_.ToString('x2') }) -join '')
+    $computed = ($hash | ForEach-Object { $_.ToString('x2') }) -join ''
 
-    # Also accept a bare shared-secret header as a fallback, in case Formspree
-    # sends the plain secret rather than an HMAC signature.
-    if ($SignatureHeaderValue.Trim() -eq $Secret) { return $true }
-
-    if ($computed.Length -ne $SignatureHeaderValue.Trim().Length) { return $false }
+    if ($computed.Length -ne $signature.Length) { return $false }
     $diff = 0
     for ($i = 0; $i -lt $computed.Length; $i++) {
-        $diff = $diff -bor ([byte][char]$computed[$i] -bxor [byte][char]$SignatureHeaderValue.Trim()[$i])
+        $diff = $diff -bor ([byte][char]$computed[$i] -bxor [byte][char]$signature[$i])
     }
     return ($diff -eq 0)
 }
