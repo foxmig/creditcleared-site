@@ -214,7 +214,12 @@ function Test-FormspreeSignature {
     $bodyText = [System.Text.Encoding]::UTF8.GetString($Body)
     $signedPayloadBytes = [System.Text.Encoding]::UTF8.GetBytes("$timestamp.$bodyText")
 
-    $hmac = New-Object System.Security.Cryptography.HMACSHA256([System.Text.Encoding]::UTF8.GetBytes($Secret))
+    # Use [Type]::new(...) rather than New-Object here -- New-Object's
+    # -ArgumentList enumerates an array argument into one constructor
+    # parameter per element (e.g. a 64-byte key becomes 64 arguments), which
+    # never matches any HMACSHA256 overload. ::new() passes the byte[] key
+    # as a single argument, as intended.
+    $hmac = [System.Security.Cryptography.HMACSHA256]::new([System.Text.Encoding]::UTF8.GetBytes($Secret))
     try {
         $hash = $hmac.ComputeHash($signedPayloadBytes)
     } finally {
