@@ -215,6 +215,46 @@ footer {
 
 .hidden { display: none !important; }
 
+/* ── SHADOW BUREAU FREEZE CONFIRMATION ── */
+.shadow-bureau-section {
+  margin-bottom: 20px;
+  padding: 16px 18px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+}
+.shadow-bureau-section .section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+  display: block;
+}
+.shadow-bureau-section .helper-text {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.shadow-bureau-section label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.8);
+  padding: 6px 0;
+  cursor: pointer;
+}
+.shadow-bureau-section input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--gold);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 @media(max-width:480px){ .field-row { flex-direction: column; gap: 0; } }
 </style>
 </head>
@@ -255,6 +295,12 @@ footer {
           file -- these map straight onto job.client.* in job.json and,
           via analyze.ps1, into the GOAL_FROM_FORM / DEADLINE_FROM_FORM /
           NOTES_FROM_FORM tokens of consumer-analysis-user-prompt.txt.
+
+          The 5 freeze_* checkboxes are read by Get-ShadowBureauChecklist
+          (common.ps1) -- an unchecked box is simply absent from Formspree's
+          payload, not present-with-value-false. Submission is never blocked
+          on these; main.ps1 gates entry into the analysis queue on them
+          instead (see confirm-freeze.html for the follow-up confirmation).
         -->
         <form id="upload-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" enctype="multipart/form-data">
 
@@ -292,6 +338,17 @@ footer {
           <div class="field">
             <label for="notes">Anything else we should know? <span class="optional-tag">(optional)</span></label>
             <textarea id="notes" name="notes" placeholder="Accounts you're most concerned about, disputes already in progress, etc."></textarea>
+          </div>
+
+          <div class="shadow-bureau-section">
+            <label class="section-label">Shadow Bureau Freeze Confirmation</label>
+            <p class="helper-text">Confirm you've frozen each of the 5 shadow bureaus per your welcome email instructions:</p>
+
+            <label><input type="checkbox" name="freeze_lexisnexis"> LexisNexis</label>
+            <label><input type="checkbox" name="freeze_sagestream"> SageStream</label>
+            <label><input type="checkbox" name="freeze_innovis"> Innovis</label>
+            <label><input type="checkbox" name="freeze_ars"> ARS</label>
+            <label><input type="checkbox" name="freeze_chexsystems"> ChexSystems</label>
           </div>
 
           <div class="field">

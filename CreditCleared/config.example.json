@@ -27,6 +27,11 @@
   "log_path": ".\\logs",
   "template_path": ".\\templates",
 
+  "shadow_bureau_reminder_1hr_delay_hours": 1,
+  "shadow_bureau_reminder_24hr_delay_hours": 24,
+  "shadow_bureau_manual_flag_hours": 72,
+  "shadow_bureau_reminder_template_path": ".\\templates\\shadow-bureau-reminder-email.html",
+
   "funding_addon_price": 197,
   "funding_addon_payment_link": "[STRIPE PAYMENT LINK FOR $197 FUNDING ADD-ON]"
 }

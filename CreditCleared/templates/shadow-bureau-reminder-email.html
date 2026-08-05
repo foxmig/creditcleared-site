@@ -1,0 +1,27 @@
+<!--
+  Subject: set per-send in shadow-bureau-followup.ps1 (varies for the 1hr vs
+  24hr reminder). Tokens: {{CLIENT_FIRST_NAME}} {{CONFIRM_URL}} {{YOUR_NAME}}
+  {{YOUR_PHONE}} {{BUSINESS_DBA}} {{BUSINESS_NAME}}
+  Used for both the 1-hour and 24-hour shadow bureau freeze reminders.
+-->
+<p>Hi {{CLIENT_FIRST_NAME}},</p>
+
+<p>Your credit report is in hand, but your roadmap is on hold until we hear back from you on one thing.</p>
+
+<p>Per your welcome email, we ask every client to freeze their file at 5 specialty ("shadow") bureaus before we run the analysis: <strong>LexisNexis, SageStream, Innovis, ARS, and ChexSystems</strong>. If any of these are left unfrozen, a dispute we send on your behalf can end up getting overlooked as "already verified" — so we hold the analysis until all 5 are confirmed frozen.</p>
+
+<p>If you've already frozen all 5, this only takes a minute — just confirm it here:</p>
+
+<p><a href="{{CONFIRM_URL}}">{{CONFIRM_URL}}</a></p>
+
+<p>As soon as you confirm, your roadmap goes straight into the queue.</p>
+
+<p>Questions, or need the freeze instructions again? Reply here or call {{YOUR_PHONE}}.</p>
+
+<p>
+{{YOUR_NAME}}<br>
+{{BUSINESS_DBA}} | {{BUSINESS_NAME}}<br>
+{{YOUR_PHONE}}
+</p>
+
+<p><em>Educational and informational service only. Not a credit repair organization.</em></p>

@@ -120,6 +120,18 @@ function Invoke-WebhookRequest {
     # the "Send test" button) ever sends the fields unwrapped.
     $submission = if ($payload.PSObject.Properties.Name -contains 'submission') { $payload.submission } else { $payload }
 
+    # This endpoint receives two different Formspree forms: the credit report
+    # upload (upload-page.html) and the shadow bureau freeze confirmation
+    # (confirm-freeze.html). The confirmation form always posts "client_email"
+    # and never a credit_report file; the upload form is the opposite. Route
+    # accordingly before assuming this is an upload.
+    $hasClientEmail = ($submission.PSObject.Properties.Name -contains 'client_email') -and (-not [string]::IsNullOrWhiteSpace([string]$submission.client_email))
+    $hasCreditReportField = ($submission.PSObject.Properties.Name -contains 'credit_report') -and $submission.credit_report
+    if ($hasClientEmail -and -not $hasCreditReportField) {
+        Invoke-ShadowBureauConfirmation -Context $Context -Config $Config -TestMode:$TestMode -Submission $submission -RemoteIp $remoteIp -BodyText $bodyText
+        return
+    }
+
     $firstName = $submission.first_name
     $lastName = $submission.last_name
     $email = if ($submission._replyto) { $submission._replyto } else { $submission.email }
@@ -145,6 +157,17 @@ function Invoke-WebhookRequest {
         return
     }
 
+    # Section: Shadow Bureau Freeze Confirmation. Formspree omits a checkbox
+    # field entirely from the payload when it's unchecked -- see
+    # Get-ShadowBureauChecklist (common.ps1) -- so "checked" is presence of a
+    # truthy freeze_<bureau> field.
+    $shadowBureauChecklist = Get-ShadowBureauChecklist -Submission $submission
+    $shadowBureauIncomplete = $shadowBureauChecklist.Values -contains $false
+    foreach ($key in $shadowBureauChecklist.Keys) {
+        $status = if ($shadowBureauChecklist[$key]) { 'checked' } else { 'unchecked' }
+        Write-JobLog -JobId $jobId -LogPath $Config.log_path -Message "Shadow bureau freeze checkbox -- $($Script:ShadowBureaus[$key]): $status."
+    }
+
     $jobFolder = Get-JobFolder -Config $Config -Stage $Stage -JobId $jobId -Create
     $reportPath = Join-Path $jobFolder 'report.pdf'
     [System.IO.File]::WriteAllBytes($reportPath, $reportBytes)
@@ -165,6 +188,11 @@ function Invoke-WebhookRequest {
         }
         files         = @{ report_pdf = 'report.pdf' }
         confirmation  = @{ sent_at = $null }
+        shadow_bureau = [ordered]@{
+            incomplete   = $shadowBureauIncomplete
+            checklist    = $shadowBureauChecklist
+            confirmed_at = $null
+        }
         analysis      = @{ consumer_completed_at = $null; consumer_response_file = $null }
         delivery      = @{ scheduled_at = $null; delivered_at = $null }
         funding_addon = @{ purchased = $false; completed_at = $null }
@@ -199,10 +227,173 @@ function Invoke-WebhookRequest {
             -Message "Job $jobId was created but the confirmation email failed to send:`n$_"
     }
 
-    Start-AnalysisJob -JobId $jobId -TestMode:$TestMode
-    Write-JobLog -JobId $jobId -LogPath $Config.log_path -Message "Handed off to analyze.ps1."
+    # Shadow bureau freeze confirmation is a hard gate, not a courtesy flag --
+    # an unfrozen bureau can cause a challenge to be overlooked as "already
+    # verified", so an incomplete job does not enter the analysis queue.
+    # TestMode bypasses this (like it bypasses the delivery delay) so the
+    # operator can exercise the pipeline end-to-end without a second, real
+    # confirmation submission from confirm-freeze.html.
+    if ($shadowBureauIncomplete -and -not $TestMode) {
+        $jobFolder = Move-JobFolder -Config $Config -JobId $jobId -FromStage $Stage -ToStage 'hold'
+        $jobJsonPath = Join-Path $jobFolder 'job.json'
+        $job.status = 'hold'
+        ($job | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $jobJsonPath -Encoding UTF8
+
+        Start-ShadowBureauReminders -Config $Config -JobId $jobId
+        Write-JobLog -JobId $jobId -LogPath $Config.log_path -Message "Shadow bureau freeze confirmation incomplete -- job held out of the analysis queue. Reminders scheduled at +$($Config.shadow_bureau_reminder_1hr_delay_hours)h and +$($Config.shadow_bureau_reminder_24hr_delay_hours)h; manual follow-up flag at +$($Config.shadow_bureau_manual_flag_hours)h."
+    } else {
+        if ($shadowBureauIncomplete) {
+            Write-JobLog -JobId $jobId -LogPath $Config.log_path -Message 'Shadow bureau freeze confirmation incomplete, but TestMode is on -- gate bypassed, proceeding to analysis immediately.'
+        }
+        Start-AnalysisJob -JobId $jobId -TestMode:$TestMode
+        Write-JobLog -JobId $jobId -LogPath $Config.log_path -Message "Handed off to analyze.ps1."
+    }
 
     Send-HttpResponse -Context $Context -StatusCode 200 -Body "Received. Job: $jobId"
+}
+
+function Find-HeldShadowBureauJob {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]$Config,
+        [Parameter(Mandatory)][string]$Email
+    )
+
+    $holdRoot = Join-Path $Config.job_storage_path 'hold'
+    if (-not (Test-Path -LiteralPath $holdRoot)) { return $null }
+
+    $normalizedEmail = $Email.Trim().ToLowerInvariant()
+    $candidates = Get-ChildItem -LiteralPath $holdRoot -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+        $candidateJsonPath = Join-Path $_.FullName 'job.json'
+        if (-not (Test-Path -LiteralPath $candidateJsonPath)) { return }
+        try {
+            $candidateJob = Get-Content -LiteralPath $candidateJsonPath -Raw | ConvertFrom-Json
+        } catch {
+            return
+        }
+        $candidateEmail = [string]$candidateJob.client.email
+        if ($candidateJob.shadow_bureau.incomplete -and $candidateEmail -and ($candidateEmail.Trim().ToLowerInvariant() -eq $normalizedEmail)) {
+            [pscustomobject]@{ Job = $candidateJob; Folder = $_.FullName; JobJsonPath = $candidateJsonPath }
+        }
+    }
+
+    # Handles multiple submissions from the same address: job_id is
+    # timestamp-prefixed (New-JobId, common.ps1), so sorting the id string
+    # descending picks the most recently uploaded matching job.
+    return $candidates | Sort-Object { $_.Job.job_id } -Descending | Select-Object -First 1
+}
+
+function Get-ShadowBureauFollowupTaskName {
+    param([string]$JobId, [string]$Suffix)
+    return "CreditCleared-ShadowBureau-$Suffix-$JobId"
+}
+
+function Start-ShadowBureauReminders {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]$Config,
+        [Parameter(Mandatory)][string]$JobId
+    )
+
+    $followupScript = Join-Path $ScriptRoot 'shadow-bureau-followup.ps1'
+    $schedule = @(
+        @{ Suffix = 'Reminder1hr';  Hours = [double]$Config.shadow_bureau_reminder_1hr_delay_hours }
+        @{ Suffix = 'Reminder24hr'; Hours = [double]$Config.shadow_bureau_reminder_24hr_delay_hours }
+        @{ Suffix = 'ManualFlag';   Hours = [double]$Config.shadow_bureau_manual_flag_hours }
+    )
+
+    foreach ($item in $schedule) {
+        $taskName = Get-ShadowBureauFollowupTaskName -JobId $JobId -Suffix $item.Suffix
+        $fireAt = (Get-Date).AddHours($item.Hours)
+        $argumentList = "-NoProfile -File `"$followupScript`" -JobId `"$JobId`" -Kind $($item.Suffix)"
+        $action = New-ScheduledTaskAction -Execute 'pwsh' -Argument $argumentList
+        $trigger = New-ScheduledTaskTrigger -Once -At $fireAt
+        Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger `
+            -Description "Credit Cleared shadow bureau $($item.Suffix) for job $JobId" -Force | Out-Null
+    }
+}
+
+function Stop-ShadowBureauReminders {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][string]$JobId)
+
+    foreach ($suffix in @('Reminder1hr', 'Reminder24hr', 'ManualFlag')) {
+        $taskName = Get-ShadowBureauFollowupTaskName -JobId $JobId -Suffix $suffix
+        try {
+            Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
+        } catch {
+            # Not registered -- never scheduled (e.g. TestMode), or already
+            # fired/removed. Nothing to do.
+        }
+    }
+}
+
+function Invoke-ShadowBureauConfirmation {
+    [CmdletBinding()]
+    param($Context, $Config, [switch]$TestMode, $Submission, [string]$RemoteIp, [string]$BodyText)
+
+    $email = [string]$Submission.client_email
+
+    $checklist = Get-ShadowBureauChecklist -Submission $Submission
+    foreach ($key in $checklist.Keys) {
+        $status = if ($checklist[$key]) { 'checked' } else { 'unchecked' }
+        Write-Host "Shadow bureau confirmation from $RemoteIp for '$email' -- $($Script:ShadowBureaus[$key]): $status."
+    }
+    $allChecked = -not ($checklist.Values -contains $false)
+
+    if ([string]::IsNullOrWhiteSpace($email)) {
+        Write-Warning "Shadow bureau confirmation from $RemoteIp has no client_email -- cannot proceed."
+        Send-OperatorAlert -Config $Config -Subject 'Shadow bureau confirmation missing client_email -- check manually' `
+            -Message "A shadow bureau confirmation submission came in without a usable client_email.`n`nRaw payload:`n$BodyText"
+        Send-HttpResponse -Context $Context -StatusCode 200 -Body 'Received (alert sent -- missing client_email)'
+        return
+    }
+
+    if (-not $allChecked) {
+        # confirm-freeze.html disables submit until all 5 boxes are checked,
+        # so this should be unreachable via the real page -- treat it as
+        # tampered or malformed input and do NOT release any job.
+        Write-Warning "Shadow bureau confirmation from $RemoteIp for '$email' arrived with not all 5 boxes checked -- not releasing any job."
+        Send-OperatorAlert -Config $Config -Subject "Shadow bureau confirmation incomplete -- check manually ($email)" `
+            -Message "A shadow bureau confirmation submission for $email arrived without all 5 boxes checked. This should not be possible via confirm-freeze.html -- check for tampering or a bug.`n`nRaw payload:`n$BodyText"
+        Send-HttpResponse -Context $Context -StatusCode 200 -Body 'Received (alert sent -- confirmation incomplete)'
+        return
+    }
+
+    $match = Find-HeldShadowBureauJob -Config $Config -Email $email
+    if (-not $match) {
+        Write-Warning "Shadow bureau confirmation from $RemoteIp for '$email' has no matching held job."
+        Send-OperatorAlert -Config $Config -Subject "Shadow bureau confirmation for $email -- no matching held job found" `
+            -Message "A shadow bureau confirmation came in for $email but no on-hold job for that email was found (already released, wrong email, or a race). Check manually.`n`nRaw payload:`n$BodyText"
+        Send-HttpResponse -Context $Context -StatusCode 200 -Body 'Received (alert sent -- no matching job)'
+        return
+    }
+
+    $job = $match.Job
+    $jobId = $job.job_id
+
+    $job.shadow_bureau.incomplete = $false
+    $job.shadow_bureau.checklist = $checklist
+    # Server time, not the client-supplied confirmed_at field on the
+    # submission -- client clocks aren't trustworthy for the authoritative record.
+    $job.shadow_bureau.confirmed_at = (Get-Date).ToString('o')
+
+    # Release into the analysis queue timestamped from confirmation, not the
+    # original upload: Move-JobFolder puts it back in 'queued', and
+    # analyze.ps1's delivery-time math runs relative to whenever it actually
+    # executes (i.e. now), so no separate timestamp plumbing is needed.
+    $destFolder = Move-JobFolder -Config $Config -JobId $jobId -FromStage 'hold' -ToStage 'queued'
+    $jobJsonPath = Join-Path $destFolder 'job.json'
+    $job.status = 'queued'
+    ($job | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $jobJsonPath -Encoding UTF8
+
+    Stop-ShadowBureauReminders -JobId $jobId
+    Write-JobLog -JobId $jobId -LogPath $Config.log_path -Message "Shadow bureau freeze confirmed by $email from $RemoteIp. Released into analysis queue and scheduled reminders/manual-flag cancelled."
+
+    Start-AnalysisJob -JobId $jobId -TestMode:$TestMode
+    Write-JobLog -JobId $jobId -LogPath $Config.log_path -Message 'Handed off to analyze.ps1 after shadow bureau confirmation.'
+
+    Send-HttpResponse -Context $Context -StatusCode 200 -Body "Confirmed. Job released: $jobId"
 }
 
 $listener = New-Object System.Net.HttpListener

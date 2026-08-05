@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirm Your Shadow Bureau Freezes — Credit Cleared</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0A1628;
+  --navy-mid: #0F2040;
+  --navy-light: #152847;
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --white: #FFFFFF;
+  --green-accent: #1A5C3A;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy);
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.7;
+}
+
+h1, h2 { font-family: 'Playfair Display', serif; line-height: 1.25; }
+
+.container-wide { max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+
+/* ── NAV (matches index.html / upload-page.html) ── */
+.site-nav {
+  background: rgba(10,22,40,0.95);
+  backdrop-filter: blur(10px);
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(201,168,76,0.15);
+}
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--white);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+.nav-logo span { color: var(--gold); }
+.nav-trust { font-size: 0.73rem; color: rgba(255,255,255,0.4); }
+@media(max-width:580px){ .nav-trust { display:none; } }
+
+/* ── MAIN ── */
+main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 20px;
+}
+
+.confirm-wrap { width: 100%; max-width: 480px; }
+
+.confirm-header { text-align: center; margin-bottom: 32px; }
+.confirm-header .section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+  display: block;
+}
+.confirm-header h1 { font-size: 1.9rem; margin-bottom: 12px; }
+.confirm-header p { color: rgba(255,255,255,0.6); font-size: 0.95rem; max-width: 400px; margin: 0 auto; }
+
+.confirm-card {
+  background: var(--navy-light);
+  border: 1px solid rgba(201,168,76,0.18);
+  border-radius: 10px;
+  padding: 32px;
+}
+
+.confirming-for {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.confirming-for strong { color: var(--gold-light); font-weight: 600; }
+
+.checklist label {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.85);
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+}
+.checklist label:last-child { border-bottom: none; }
+.checklist input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--gold);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── BUTTON (matches upload-page.html .btn-submit) ── */
+.btn-submit {
+  display: block;
+  width: 100%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: var(--navy);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 16px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  box-shadow: 0 8px 30px rgba(201,168,76,0.3);
+  margin-top: 20px;
+}
+.btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(201,168,76,0.45); }
+.btn-submit:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.form-note {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+  margin-top: 16px;
+  line-height: 1.5;
+}
+
+.alert {
+  border-radius: 6px;
+  padding: 12px 15px;
+  font-size: 0.85rem;
+  margin-bottom: 18px;
+  display: none;
+}
+.alert.show { display: block; }
+.alert-error {
+  background: rgba(139,32,32,0.15);
+  border: 1px solid rgba(139,32,32,0.4);
+  color: #E8A0A0;
+}
+
+/* ── SUCCESS / MISSING-EMAIL STATES ── */
+.success-state, .missing-email-state { text-align: center; }
+.success-icon {
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  background: rgba(26,92,58,0.2);
+  border: 1px solid rgba(26,92,58,0.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+  color: #4ADE80;
+  margin: 0 auto 24px;
+}
+.success-state h1 { font-size: 1.7rem; margin-bottom: 14px; }
+.success-state p { color: rgba(255,255,255,0.6); font-size: 0.95rem; }
+
+.missing-email-state .confirm-card { text-align: left; }
+
+/* ── FOOTER (matches index.html / upload-page.html) ── */
+footer {
+  background: #060E1A;
+  padding: 28px 0;
+  border-top: 1px solid rgba(201,168,76,0.1);
+  text-align: center;
+}
+.footer-legal {
+  font-size: 0.73rem;
+  color: rgba(255,255,255,0.3);
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <div class="container-wide nav-inner">
+    <a href="index.html" class="nav-logo">Credit<span>Cleared</span></a>
+    <span class="nav-trust">🔒 Secure Confirmation</span>
+  </div>
+</nav>
+
+<main>
+  <div class="confirm-wrap">
+
+    <!-- FORM STATE -->
+    <div id="form-state">
+      <div class="confirm-header">
+        <span class="section-label">One Step Left</span>
+        <h1>Confirm Your Shadow Bureau Freezes</h1>
+        <p>Your roadmap is on hold until you confirm all 5 freezes are in place.</p>
+      </div>
+
+      <div class="confirm-card">
+        <div id="form-error" class="alert alert-error"></div>
+
+        <div class="confirming-for">Confirming for: <strong id="confirming-email"></strong></div>
+
+        <!--
+          Replace YOUR_CONFIRM_FORM_ID with the live Formspree endpoint
+          (https://formspree.io/f/YOUR_CONFIRM_FORM_ID) for this confirmation
+          form. It can be the same Formspree webhook target as upload-page.html
+          or a separate one -- main.ps1's Invoke-WebhookRequest tells the two
+          submissions apart by payload shape (client_email present, no
+          credit_report file), not by which Formspree form ID sent them. A
+          separate form is recommended so Formspree's own dashboard/analytics
+          keep the two submission types distinct.
+
+          Field names match what main.ps1's Invoke-ShadowBureauConfirmation
+          reads: client_email, the 5 freeze_* checkboxes, confirmed_at.
+        -->
+        <form id="confirm-form" action="https://formspree.io/f/YOUR_CONFIRM_FORM_ID" method="POST">
+          <input type="hidden" id="client_email" name="client_email" value="">
+          <input type="hidden" id="confirmed_at" name="confirmed_at" value="">
+          <input type="hidden" name="_subject" value="Shadow bureau freeze confirmation">
+
+          <div class="checklist">
+            <label><input type="checkbox" name="freeze_lexisnexis" class="freeze-check"> LexisNexis</label>
+            <label><input type="checkbox" name="freeze_sagestream" class="freeze-check"> SageStream</label>
+            <label><input type="checkbox" name="freeze_innovis" class="freeze-check"> Innovis</label>
+            <label><input type="checkbox" name="freeze_ars" class="freeze-check"> ARS</label>
+            <label><input type="checkbox" name="freeze_chexsystems" class="freeze-check"> ChexSystems</label>
+          </div>
+
+          <button type="submit" class="btn-submit" id="submit-btn" disabled>Confirm All 5 Freezes</button>
+
+          <p class="form-note">Check all 5 boxes above to enable confirmation. This unlocks your analysis — it doesn't submit anything else.</p>
+        </form>
+      </div>
+    </div>
+
+    <!-- MISSING EMAIL STATE -->
+    <div id="missing-email-state" class="missing-email-state hidden">
+      <div class="confirm-card">
+        <h1 style="font-size:1.3rem; margin-bottom:10px;">Missing confirmation link</h1>
+        <p style="color:rgba(255,255,255,0.6); font-size:0.9rem;">This page needs your email to know which submission to confirm. Please use the confirmation link from your reminder email, or reply to that email and we'll resend it.</p>
+      </div>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div id="success-state" class="success-state hidden">
+      <div class="success-icon">✓</div>
+      <h1>Confirmed — you're all set</h1>
+      <p>Your shadow bureau freezes are confirmed. Your roadmap has been released into the analysis queue and you'll have it in your inbox soon.</p>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container-wide footer-legal">
+    Credit Cleared provides educational and informational services only. We are not a credit repair organization as defined under the Credit Repair Organizations Act. Individual results vary and are not guaranteed.
+  </div>
+</footer>
+
+<script>
+(function () {
+  var formState = document.getElementById('form-state');
+  var missingEmailState = document.getElementById('missing-email-state');
+  var successState = document.getElementById('success-state');
+
+  var params = new URLSearchParams(window.location.search);
+  var rawEmail = params.get('email');
+  var email = rawEmail ? decodeURIComponent(rawEmail) : '';
+
+  if (!email) {
+    formState.classList.add('hidden');
+    missingEmailState.classList.remove('hidden');
+    return;
+  }
+
+  document.getElementById('confirming-email').textContent = email;
+  document.getElementById('client_email').value = email;
+
+  var form = document.getElementById('confirm-form');
+  var checkboxes = Array.prototype.slice.call(document.querySelectorAll('.freeze-check'));
+  var submitBtn = document.getElementById('submit-btn');
+  var errorBox = document.getElementById('form-error');
+  var confirmedAtField = document.getElementById('confirmed_at');
+
+  function updateSubmitState() {
+    var allChecked = checkboxes.every(function (cb) { return cb.checked; });
+    submitBtn.disabled = !allChecked;
+  }
+  checkboxes.forEach(function (cb) { cb.addEventListener('change', updateSubmitState); });
+  updateSubmitState();
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.classList.add('show');
+  }
+  function hideError() {
+    errorBox.classList.remove('show');
+    errorBox.textContent = '';
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    hideError();
+
+    var allChecked = checkboxes.every(function (cb) { return cb.checked; });
+    if (!allChecked) {
+      showError('Please check all 5 boxes before confirming.');
+      return;
+    }
+
+    confirmedAtField.value = new Date().toISOString();
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Confirming…';
+
+    var data = new FormData(form);
+
+    fetch(form.action, {
+      method: 'POST',
+      body: data,
+      headers: { Accept: 'application/json' }
+    }).then(function (response) {
+      if (response.ok) {
+        formState.classList.add('hidden');
+        successState.classList.remove('hidden');
+      } else {
+        return response.json().then(function (body) {
+          var msg = (body && body.errors && body.errors.map(function (e) { return e.message; }).join(', ')) || 'Confirmation failed. Please try again.';
+          throw new Error(msg);
+        });
+      }
+    }).catch(function (err) {
+      showError(err.message || 'Network error. Please check your connection and try again.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Confirm All 5 Freezes';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -17,7 +17,9 @@ function Get-CreditClearedConfig {
         'anthropic_api_key', 'claude_model', 'gmail_address', 'gmail_app_password',
         'your_name', 'your_phone', 'your_email', 'formspree_secret', 'webhook_port',
         'delivery_delay_hours', 'delivery_time_hour', 'delivery_time_minute',
-        'job_storage_path', 'log_path', 'template_path'
+        'job_storage_path', 'log_path', 'template_path',
+        'shadow_bureau_reminder_1hr_delay_hours', 'shadow_bureau_reminder_24hr_delay_hours',
+        'shadow_bureau_manual_flag_hours', 'shadow_bureau_reminder_template_path'
     )
     $missing = $required | Where-Object { $config.PSObject.Properties.Name -notcontains $_ }
     if ($missing) {
@@ -25,7 +27,7 @@ function Get-CreditClearedConfig {
     }
 
     $baseDir = Split-Path -Parent $Path
-    foreach ($field in @('job_storage_path', 'log_path', 'template_path')) {
+    foreach ($field in @('job_storage_path', 'log_path', 'template_path', 'shadow_bureau_reminder_template_path')) {
         $raw = $config.$field
         if (-not [System.IO.Path]::IsPathRooted($raw)) {
             $config.$field = (Join-Path $baseDir $raw)
@@ -147,7 +149,7 @@ function Get-JobFolder {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]$Config,
-        [Parameter(Mandatory)][ValidateSet('queued', 'processing', 'completed', 'archive', 'failed', 'test', 'funding')][string]$Stage,
+        [Parameter(Mandatory)][ValidateSet('queued', 'processing', 'completed', 'archive', 'failed', 'test', 'funding', 'hold')][string]$Stage,
         [Parameter(Mandatory)][string]$JobId,
         [switch]$Create
     )
@@ -164,8 +166,8 @@ function Move-JobFolder {
     param(
         [Parameter(Mandatory)]$Config,
         [Parameter(Mandatory)][string]$JobId,
-        [Parameter(Mandatory)][ValidateSet('queued', 'processing', 'completed', 'archive', 'failed', 'test', 'funding')][string]$FromStage,
-        [Parameter(Mandatory)][ValidateSet('queued', 'processing', 'completed', 'archive', 'failed', 'test', 'funding')][string]$ToStage
+        [Parameter(Mandatory)][ValidateSet('queued', 'processing', 'completed', 'archive', 'failed', 'test', 'funding', 'hold')][string]$FromStage,
+        [Parameter(Mandatory)][ValidateSet('queued', 'processing', 'completed', 'archive', 'failed', 'test', 'funding', 'hold')][string]$ToStage
     )
 
     $source = Get-JobFolder -Config $Config -Stage $FromStage -JobId $JobId
@@ -176,6 +178,36 @@ function Move-JobFolder {
     $dest = Join-Path $destRoot $JobId
     Move-Item -LiteralPath $source -Destination $dest -Force
     return $dest
+}
+
+# The 5 shadow bureaus clients are asked to freeze before analysis proceeds.
+# Keep this list in one place -- main.ps1 (upload gate + confirmation
+# handler) and shadow-bureau-followup.ps1 both need the exact same set.
+$Script:ShadowBureaus = [ordered]@{
+    lexisnexis  = 'LexisNexis'
+    sagestream  = 'SageStream'
+    innovis     = 'Innovis'
+    ars         = 'ARS'
+    chexsystems = 'ChexSystems'
+}
+
+function Get-ShadowBureauChecklist {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]$Submission
+    )
+
+    # Formspree (like any standard HTML form) only includes a checkbox field
+    # in the payload when it was checked -- an unchecked box is simply
+    # absent, not present-with-value-false. Presence of a truthy value is
+    # "checked".
+    $checklist = [ordered]@{}
+    foreach ($key in $Script:ShadowBureaus.Keys) {
+        $fieldName = "freeze_$key"
+        $hasField = $Submission.PSObject.Properties.Name -contains $fieldName
+        $checklist[$key] = [bool]($hasField -and $Submission.$fieldName)
+    }
+    return $checklist
 }
 
 function Test-FormspreeSignature {
