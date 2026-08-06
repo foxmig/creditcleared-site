@@ -220,7 +220,7 @@ footer {
 
         <!--
           Replace YOUR_CONFIRM_FORM_ID with the live Formspree endpoint
-          (https://formspree.io/f/YOUR_CONFIRM_FORM_ID) for this confirmation
+          (https://formspree.io/f/mnpanjvk) for this confirmation
           form. It can be the same Formspree webhook target as upload-page.html
           or a separate one -- main.ps1's Invoke-WebhookRequest tells the two
           submissions apart by payload shape (client_email present, no
@@ -231,7 +231,7 @@ footer {
           Field names match what main.ps1's Invoke-ShadowBureauConfirmation
           reads: client_email, the 5 freeze_* checkboxes, confirmed_at.
         -->
-        <form id="confirm-form" action="https://formspree.io/f/YOUR_CONFIRM_FORM_ID" method="POST">
+        <form id="confirm-form" action="https://formspree.io/f/mnpanjvk" method="POST">
           <input type="hidden" id="client_email" name="client_email" value="">
           <input type="hidden" id="confirmed_at" name="confirmed_at" value="">
           <input type="hidden" name="_subject" value="Shadow bureau freeze confirmation">
