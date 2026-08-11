@@ -101,7 +101,7 @@ def parse_sections(raw_text: str) -> dict:
     """Split the Claude response into {header: body} using the known,
     exact section headers the prompt instructed it to use."""
     pattern = "|".join(re.escape(h) for h in SECTION_HEADERS)
-    regex = re.compile(rf"^\s*\**\s*({pattern})\s*\**\s*$", re.MULTILINE)
+    regex = re.compile(rf"^\s*#*\s*\**\s*({pattern})\s*\**\s*#*\s*$", re.MULTILINE)
 
     matches = list(regex.finditer(raw_text))
     sections = {}
@@ -114,7 +114,7 @@ def parse_sections(raw_text: str) -> dict:
 
 
 def is_subheading(line: str) -> bool:
-    stripped = line.strip().strip("*").strip()
+    stripped = line.strip()
     if not stripped:
         return False
     if len(stripped) > 70:
@@ -163,9 +163,13 @@ def add_body_text(doc: Document, text: str):
         if not line.strip():
             doc.add_paragraph()
             continue
+        # Strip markdown artifacts -- the doc has its own bold/heading
+        # styling, so literal ## and ** characters shouldn't show up.
+        cleaned = re.sub(r"^#+\s*", "", line.strip())
+        cleaned = cleaned.replace("**", "")
         p = doc.add_paragraph()
-        run = p.add_run(line.strip())
-        if is_subheading(line):
+        run = p.add_run(cleaned)
+        if is_subheading(cleaned):
             run.bold = True
             run.font.size = Pt(12)
         else:

@@ -15,7 +15,7 @@ function Get-CreditClearedConfig {
 
     $required = @(
         'anthropic_api_key', 'claude_model', 'gmail_address', 'gmail_app_password',
-        'your_name', 'your_phone', 'your_email', 'formspree_secret', 'webhook_port',
+        'your_name', 'your_phone', 'your_email', 'formspree_secrets', 'webhook_port',
         'delivery_delay_hours', 'delivery_time_hour', 'delivery_time_minute',
         'job_storage_path', 'log_path', 'template_path',
         'shadow_bureau_reminder_1hr_delay_hours', 'shadow_bureau_reminder_24hr_delay_hours',
@@ -103,6 +103,8 @@ function Send-CreditClearedEmail {
     $smtp.Credentials = New-Object System.Net.NetworkCredential($Config.gmail_address, $Config.gmail_app_password)
 
     $mail = New-Object System.Net.Mail.MailMessage
+    $mail.BodyEncoding = [System.Text.Encoding]::UTF8
+    $mail.SubjectEncoding = [System.Text.Encoding]::UTF8
     try {
         $mail.From = New-Object System.Net.Mail.MailAddress($Config.gmail_address, "$($Config.your_name) at $($Config.business_dba)")
         $mail.To.Add($To)

@@ -58,6 +58,57 @@ function Send-HttpResponse {
     $Context.Response.OutputStream.Close()
 }
 
+function Find-RecentDuplicateJob {
+    # Guards against Formspree retries (or any other double-POST) creating a
+    # second job for the same submission. Not a perfect dedupe key -- Formspree's
+    # webhook payload doesn't include a stable submission ID in what we've seen --
+    # so this matches on client email + exact report byte length within a short
+    # window. Good enough to catch retries (seconds apart) without false-positiving
+    # on a client who legitimately re-uploads later.
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]$Config,
+        [Parameter(Mandatory)][string]$Email,
+        [Parameter(Mandatory)][int]$ReportByteLength,
+        [int]$WindowSeconds = 120
+    )
+
+    $normalizedEmail = $Email.Trim().ToLowerInvariant()
+    $cutoff = (Get-Date).AddSeconds(-$WindowSeconds)
+
+    foreach ($stage in @('queued', 'hold', 'test')) {
+        $stageRoot = Join-Path $Config.job_storage_path $stage
+        if (-not (Test-Path -LiteralPath $stageRoot)) { continue }
+
+        $matches = Get-ChildItem -LiteralPath $stageRoot -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+            $jsonPath = Join-Path $_.FullName 'job.json'
+            $pdfPath = Join-Path $_.FullName 'report.pdf'
+            if (-not (Test-Path -LiteralPath $jsonPath) -or -not (Test-Path -LiteralPath $pdfPath)) { return }
+
+            try {
+                $candidate = Get-Content -LiteralPath $jsonPath -Raw | ConvertFrom-Json
+            } catch { return }
+
+            $createdAt = [datetime]$candidate.created_at
+            if ($createdAt -lt $cutoff) { return }
+
+            $candidateEmail = [string]$candidate.client.email
+            if (-not $candidateEmail -or ($candidateEmail.Trim().ToLowerInvariant() -ne $normalizedEmail)) { return }
+
+            $candidatePdfLength = (Get-Item -LiteralPath $pdfPath).Length
+            if ($candidatePdfLength -ne $ReportByteLength) { return }
+
+            [pscustomobject]@{ JobId = $candidate.job_id; CreatedAt = $createdAt }
+        }
+
+        if ($matches) {
+            return ($matches | Sort-Object CreatedAt -Descending | Select-Object -First 1)
+        }
+    }
+
+    return $null
+}
+
 function Start-AnalysisJob {
     param([string]$JobId, [switch]$TestMode)
 
@@ -90,8 +141,28 @@ function Invoke-WebhookRequest {
     $bodyBytes = $memoryStream.ToArray()
     $memoryStream.Dispose()
 
-    $signatureHeader = $request.Headers[$Config.formspree_signature_header]
-    $signatureOk = Test-FormspreeSignature -Body $bodyBytes -Secret $Config.formspree_secret -SignatureHeaderValue $signatureHeader
+      $signatureHeader = $request.Headers[$Config.formspree_signature_header]
+
+# Peek at the form ID so we know which secret to verify against.
+# This peek doesn't grant trust -- Test-FormspreeSignature below still
+# does the real verification against the matched secret.
+$bodyTextPeek = [System.Text.Encoding]::UTF8.GetString($bodyBytes)
+$formId = $null
+try {
+    $peekJson = $bodyTextPeek | ConvertFrom-Json
+    $formId = $peekJson.form
+} catch {
+    $formId = $null
+}
+
+if (-not $formId -or -not $Config.formspree_secrets.PSObject.Properties[$formId]) {
+    Write-Warning "Rejected webhook request from $remoteIp -- unrecognized form ID '$formId'"
+    Send-HttpResponse -Context $Context -StatusCode 401 -Body 'Invalid signature or form.'
+    return
+}
+
+$formSecret = $Config.formspree_secrets.$formId
+$signatureOk = Test-FormspreeSignature -Body $bodyBytes -Secret $formSecret -SignatureHeaderValue $signatureHeader
 
     if (-not $signatureOk) {
         # If this rejects your very first real "Send test" from Formspree, the
@@ -156,6 +227,13 @@ function Invoke-WebhookRequest {
         Send-HttpResponse -Context $Context -StatusCode 200 -Body 'Received (alert sent -- missing PDF)'
         return
     }
+    $duplicateJob = Find-RecentDuplicateJob -Config $Config -Email $email -ReportByteLength $reportBytes.Length
+    if ($duplicateJob) {
+        Write-Warning "Webhook from $remoteIp for '$email' looks like a duplicate of job '$($duplicateJob.JobId)' (matching email + report size within window) -- likely a Formspree retry. Skipping."
+        Write-JobLog -JobId $duplicateJob.JobId -LogPath $Config.log_path -Message "Duplicate webhook POST received from $remoteIp and skipped (same email + report size)."
+        Send-HttpResponse -Context $Context -StatusCode 200 -Body "Duplicate ignored. Existing job: $($duplicateJob.JobId)"
+        return
+    }
 
     # Section: Shadow Bureau Freeze Confirmation. Formspree omits a checkbox
     # field entirely from the payload when it's unchecked -- see
@@ -202,18 +280,39 @@ function Invoke-WebhookRequest {
 
     Write-JobLog -JobId $jobId -LogPath $Config.log_path -Message "Webhook received from $remoteIp. Client: $firstName $lastName <$email>. Report saved ($($reportBytes.Length) bytes)."
 
+    # Ack Formspree immediately -- everything after this point (SMTP send,
+    # shadow bureau branching) is slow-ish and must not block the response,
+    # or Formspree's retry logic fires and creates duplicate jobs.
+    Send-HttpResponse -Context $Context -StatusCode 200 -Body "Received. Job: $jobId"
+
     # Confirmation email: in test mode, send to the operator (not the client),
     # per spec Section 10 test mode requirements.
-    $confirmationTemplate = Join-Path $Config.template_path 'confirmation-email.html'
+
+# Which template/subject we use depends on whether the shadow bureau
+    # freeze gate (computed earlier) is still incomplete -- an incomplete job
+    # needs the freeze-instructions variant with a confirm link, not the
+    # "roadmap is in progress" copy.
+    if ($shadowBureauIncomplete) {
+        $confirmationTemplate = Join-Path $Config.template_path 'confirmation-email-hold.html'
+        $subject = 'Got it — one thing before we start'
+    } else {
+        $confirmationTemplate = Join-Path $Config.template_path 'confirmation-email.html'
+        $subject = 'Got it — your analysis has started'
+    }
     $confirmationTo = if ($TestMode) { $Config.your_email } else { $email }
-    $subject = 'Got it — your analysis has started'
     if ($TestMode) { $subject = "[TEST] $subject" }
+
+    # Same confirm-link construction shadow-bureau-followup.ps1 uses for the
+    # 1hr/24hr reminders -- built here too so the very first email (not just
+    # the later reminders) can link straight to confirm-freeze.html.
+    $confirmUri = New-Object System.Uri([Uri]$Config.upload_page_url, 'confirm-freeze.html')
+    $confirmUrl = "$confirmUri" + '?email=' + [Uri]::EscapeDataString([string]$email)
 
     try {
         $bodyHtml = Expand-Template -TemplatePath $confirmationTemplate -Tokens @{
             CLIENT_FIRST_NAME = $firstName
+            CONFIRM_URL       = $confirmUrl
             YOUR_NAME         = $Config.your_name
-            YOUR_PHONE        = $Config.your_phone
             BUSINESS_DBA      = $Config.business_dba
             BUSINESS_NAME     = $Config.business_name
         }
@@ -249,7 +348,6 @@ function Invoke-WebhookRequest {
         Write-JobLog -JobId $jobId -LogPath $Config.log_path -Message "Handed off to analyze.ps1."
     }
 
-    Send-HttpResponse -Context $Context -StatusCode 200 -Body "Received. Job: $jobId"
 }
 
 function Find-HeldShadowBureauJob {
