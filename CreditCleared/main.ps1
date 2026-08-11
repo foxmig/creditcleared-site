@@ -316,7 +316,8 @@ $signatureOk = Test-FormspreeSignature -Body $bodyBytes -Secret $formSecret -Sig
             BUSINESS_DBA      = $Config.business_dba
             BUSINESS_NAME     = $Config.business_name
         }
-        Send-CreditClearedEmail -Config $Config -To $confirmationTo -Subject $subject -BodyHtml $bodyHtml -ReplyTo $Config.gmail_address
+        $educationalSummaryPath = Join-Path $Config.template_path 'Credit Cleared - Educational Summary.docx'
+        Send-CreditClearedEmail -Config $Config -To $confirmationTo -Subject $subject -BodyHtml $bodyHtml -ReplyTo $Config.gmail_address -Attachments @($educationalSummaryPath)
         $job.confirmation.sent_at = (Get-Date).ToString('o')
         ($job | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $jobJsonPath -Encoding UTF8
         Write-JobLog -JobId $jobId -LogPath $Config.log_path -Message "Confirmation email sent to $confirmationTo."
