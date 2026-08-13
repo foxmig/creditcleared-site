@@ -404,11 +404,8 @@ function Start-ShadowBureauReminders {
     foreach ($item in $schedule) {
         $taskName = Get-ShadowBureauFollowupTaskName -JobId $JobId -Suffix $item.Suffix
         $fireAt = (Get-Date).AddHours($item.Hours)
-        $argumentList = "-NoProfile -File `"$followupScript`" -JobId `"$JobId`" -Kind $($item.Suffix)"
-        $action = New-ScheduledTaskAction -Execute 'pwsh' -Argument $argumentList
-        $trigger = New-ScheduledTaskTrigger -Once -At $fireAt
-        Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger `
-            -Description "Credit Cleared shadow bureau $($item.Suffix) for job $JobId" -Force | Out-Null
+        $command = "pwsh -NoProfile -File `"$followupScript`" -JobId `"$JobId`" -Kind $($item.Suffix)"
+        Register-CreditClearedAtJob -TaskName $taskName -Command $command -FireAt $fireAt -JobStoragePath $Config.job_storage_path
     }
 }
 
@@ -418,12 +415,7 @@ function Stop-ShadowBureauReminders {
 
     foreach ($suffix in @('Reminder1hr', 'Reminder24hr', 'ManualFlag')) {
         $taskName = Get-ShadowBureauFollowupTaskName -JobId $JobId -Suffix $suffix
-        try {
-            Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
-        } catch {
-            # Not registered -- never scheduled (e.g. TestMode), or already
-            # fired/removed. Nothing to do.
-        }
+        Unregister-CreditClearedAtJob -TaskName $taskName -JobStoragePath $Config.job_storage_path
     }
 }
 
@@ -502,7 +494,12 @@ try {
     $listener.Start()
 } catch {
     Write-CrashLog -Config $Config -Message "FATAL -- failed to start listener on port $Port`: $($_.Exception.GetType().FullName): $_`n$($_.ScriptStackTrace)"
-    Write-Error "Failed to start listener on port $Port. On Windows this usually means the URL isn't reserved for your account or the port is in use. Try running as Administrator, or reserve the URL once with: netsh http add urlacl url=http://+:$Port/webhook/ user=Everyone`n$_"
+    $bindHint = if ($IsWindows) {
+        "On Windows this usually means the URL isn't reserved for your account or the port is in use. Try running as Administrator, or reserve the URL once with: netsh http add urlacl url=http://+:$Port/webhook/ user=Everyone"
+    } else {
+        "On Linux this usually means the port is already in use, or (for ports below 1024) the process lacks permission to bind it -- run 'sudo setcap cap_net_bind_service=+ep $(Get-Process -Id $PID | Select-Object -ExpandProperty Path)' or use a port >= 1024."
+    }
+    Write-Error "Failed to start listener on port $Port. $bindHint`n$_"
     throw
 }
 

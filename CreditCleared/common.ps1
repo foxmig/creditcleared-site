@@ -269,6 +269,54 @@ function Test-FormspreeSignature {
     return ($diff -eq 0)
 }
 
+function Register-CreditClearedAtJob {
+    # Linux equivalent of Register-ScheduledTask -Once -At <time>: schedules
+    # $Command to run once at $FireAt via atd, which (like Task Scheduler)
+    # persists the job on disk so it survives a service/droplet restart.
+    # Requires the 'at' package installed and atd running.
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$TaskName,
+        [Parameter(Mandatory)][string]$Command,
+        [Parameter(Mandatory)][datetime]$FireAt,
+        [Parameter(Mandatory)][string]$JobStoragePath
+    )
+
+    $atStoreDir = Join-Path $JobStoragePath '.at-jobs'
+    if (-not (Test-Path -LiteralPath $atStoreDir)) {
+        New-Item -ItemType Directory -Path $atStoreDir -Force | Out-Null
+    }
+
+    # 'at -t' touch-style time format: [[CC]YY]MMDDhhmm[.ss]
+    $touchTime = $FireAt.ToString('yyyyMMddHHmm.ss')
+    $atOutput = ($Command | & at -t $touchTime 2>&1 | Out-String)
+
+    if ($atOutput -notmatch 'job\s+(\d+)') {
+        throw "Failed to schedule at-job '$TaskName' via atd: $atOutput"
+    }
+    $atJobId = $Matches[1]
+    Set-Content -LiteralPath (Join-Path $atStoreDir "$TaskName.atjob") -Value $atJobId
+}
+
+function Unregister-CreditClearedAtJob {
+    # Linux equivalent of Unregister-ScheduledTask. No-op (like the original)
+    # if the job was never scheduled, already fired, or already removed.
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$TaskName,
+        [Parameter(Mandatory)][string]$JobStoragePath
+    )
+
+    $atJobFile = Join-Path (Join-Path $JobStoragePath '.at-jobs') "$TaskName.atjob"
+    if (-not (Test-Path -LiteralPath $atJobFile)) { return }
+
+    $atJobId = (Get-Content -LiteralPath $atJobFile -Raw).Trim()
+    if ($atJobId) {
+        try { & atrm $atJobId 2>&1 | Out-Null } catch {}
+    }
+    Remove-Item -LiteralPath $atJobFile -Force -ErrorAction SilentlyContinue
+}
+
 function Invoke-ClaudeMessage {
     [CmdletBinding()]
     param(

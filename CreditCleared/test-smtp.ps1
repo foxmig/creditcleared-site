@@ -1,6 +1,10 @@
 # Standalone SMTP auth test - isolates Gmail credential issue
-$gmailAddress = "cliff@mycreditcleared.com"
-$gmailAppPassword = "xlecxiglejalakfc"
+# Reads credentials from config.json (gitignored) rather than hardcoding them.
+$ScriptRoot = $PSScriptRoot
+. (Join-Path $ScriptRoot 'common.ps1')
+$Config = Get-CreditClearedConfig -Path (Join-Path $ScriptRoot 'config.json')
+$gmailAddress = $Config.gmail_address
+$gmailAppPassword = $Config.gmail_app_password
 
 try {
     $smtp = New-Object System.Net.Mail.SmtpClient('smtp.gmail.com', 587)

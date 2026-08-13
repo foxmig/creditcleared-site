@@ -206,13 +206,10 @@ try {
 
     $deliverScript = Join-Path $ScriptRoot 'deliver.ps1'
     $taskName = "CreditCleared-Deliver-$JobId"
-    $argumentList = "-NoProfile -File `"$deliverScript`" -JobId `"$JobId`""
-    if ($TestMode) { $argumentList += ' -TestMode' }
+    $command = "pwsh -NoProfile -File `"$deliverScript`" -JobId `"$JobId`""
+    if ($TestMode) { $command += ' -TestMode' }
 
-    $action = New-ScheduledTaskAction -Execute 'pwsh' -Argument $argumentList
-    $trigger = New-ScheduledTaskTrigger -Once -At $deliveryTime
-    Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger `
-        -Description "Credit Cleared delivery for job $JobId" -Force | Out-Null
+    Register-CreditClearedAtJob -TaskName $taskName -Command $command -FireAt $deliveryTime -JobStoragePath $Config.job_storage_path
 
     $job.delivery.scheduled_at = $deliveryTime.ToString('o')
     Save-Job
