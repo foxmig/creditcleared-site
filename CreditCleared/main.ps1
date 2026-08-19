@@ -120,7 +120,14 @@ function Start-AnalysisJob {
 
     $arguments = @('-NoProfile', '-File', $analyzeScript, '-JobId', $JobId)
     if ($TestMode) { $arguments += '-TestMode' }
-    Start-Process -FilePath 'pwsh' -ArgumentList $arguments -WindowStyle Hidden
+    # -WindowStyle is Windows-only -- there's no window concept for a
+    # background process on Linux, and passing it there throws
+    # NotSupportedException instead of being a no-op.
+    if ($IsWindows) {
+        Start-Process -FilePath 'pwsh' -ArgumentList $arguments -WindowStyle Hidden
+    } else {
+        Start-Process -FilePath 'pwsh' -ArgumentList $arguments
+    }
 }
 
 function Invoke-WebhookRequest {
