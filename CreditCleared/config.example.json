@@ -6,7 +6,8 @@
   "temperature": 0.3,
 
   "gmail_address": "you@creditcleared.com",
-  "gmail_app_password": "xxxx xxxx xxxx xxxx",
+  "sendgrid_api_key": "[SENDGRID API KEY]",
+  "from_email": "noreply@mycreditcleared.com",
 
   "your_name": "[YOUR NAME]",
   "your_phone": "[YOUR PHONE]",

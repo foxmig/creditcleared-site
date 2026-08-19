@@ -14,7 +14,7 @@ function Get-CreditClearedConfig {
     $config = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
 
     $required = @(
-        'anthropic_api_key', 'claude_model', 'gmail_address', 'gmail_app_password',
+        'anthropic_api_key', 'claude_model', 'gmail_address', 'sendgrid_api_key', 'from_email',
         'your_name', 'your_phone', 'your_email', 'formspree_secrets', 'webhook_port',
         'delivery_delay_hours', 'delivery_time_hour', 'delivery_time_minute',
         'job_storage_path', 'log_path', 'template_path',
@@ -87,7 +87,24 @@ function Expand-Template {
     return $body
 }
 
+function Get-AttachmentMimeType {
+    param([Parameter(Mandatory)][string]$Path)
+
+    switch ([System.IO.Path]::GetExtension($Path).ToLowerInvariant()) {
+        '.docx' { 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }
+        '.pdf'  { 'application/pdf' }
+        '.json' { 'application/json' }
+        default { 'application/octet-stream' }
+    }
+}
+
 function Send-CreditClearedEmail {
+    # Sends via the SendGrid v3 Mail Send API rather than SMTP -- DigitalOcean
+    # blocks outbound SMTP (25/587) by default and declined to lift it, so
+    # Gmail SMTP delivery is not usable from this droplet. "From" must be an
+    # address on the mycreditcleared.com domain (domain-authenticated in
+    # SendGrid); a Gmail "from" would fail DKIM/DMARC alignment. gmail_address
+    # is kept only as the Reply-To, unchanged from the SMTP-era behavior.
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]$Config,
@@ -98,34 +115,66 @@ function Send-CreditClearedEmail {
         [string]$ReplyTo
     )
 
-    $smtp = New-Object System.Net.Mail.SmtpClient('smtp.gmail.com', 587)
-    $smtp.EnableSsl = $true
-    $smtp.Credentials = New-Object System.Net.NetworkCredential($Config.gmail_address, $Config.gmail_app_password)
-
-    $mail = New-Object System.Net.Mail.MailMessage
-    $mail.BodyEncoding = [System.Text.Encoding]::UTF8
-    $mail.SubjectEncoding = [System.Text.Encoding]::UTF8
-    try {
-        $mail.From = New-Object System.Net.Mail.MailAddress($Config.gmail_address, "$($Config.your_name) at $($Config.business_dba)")
-        $mail.To.Add($To)
-        if ($ReplyTo) { $mail.ReplyToList.Add($ReplyTo) }
-        $mail.Subject = $Subject
-        $mail.Body = $BodyHtml
-        $mail.IsBodyHtml = $true
-
-        foreach ($path in $Attachments) {
-            if (Test-Path -LiteralPath $path) {
-                $mail.Attachments.Add((New-Object System.Net.Mail.Attachment($path)))
-            } else {
-                Write-Warning "Attachment not found, skipping: $path"
+    $payload = [ordered]@{
+        personalizations = @(
+            [ordered]@{
+                to      = @(@{ email = $To })
+                subject = $Subject
             }
+        )
+        from             = [ordered]@{
+            email = $Config.from_email
+            name  = "$($Config.your_name) at $($Config.business_dba)"
         }
+        content          = @(
+            [ordered]@{ type = 'text/html'; value = $BodyHtml }
+        )
+    }
+    if ($ReplyTo) {
+        $payload.reply_to = @{ email = $ReplyTo }
+    }
 
-        $smtp.Send($mail)
-    } finally {
-        foreach ($att in $mail.Attachments) { $att.Dispose() }
-        $mail.Dispose()
-        $smtp.Dispose()
+    $attachmentPayload = @()
+    foreach ($path in $Attachments) {
+        if (Test-Path -LiteralPath $path) {
+            $bytes = [System.IO.File]::ReadAllBytes($path)
+            $attachmentPayload += [ordered]@{
+                content     = [Convert]::ToBase64String($bytes)
+                filename    = [System.IO.Path]::GetFileName($path)
+                type        = Get-AttachmentMimeType -Path $path
+                disposition = 'attachment'
+            }
+        } else {
+            Write-Warning "Attachment not found, skipping: $path"
+        }
+    }
+    if ($attachmentPayload.Count -gt 0) {
+        $payload.attachments = $attachmentPayload
+    }
+
+    # Encode to UTF-8 bytes explicitly and send as -ContentType with charset --
+    # relying on Invoke-WebRequest's default string handling previously caused
+    # em dashes / other multi-byte characters to get mangled in outgoing mail.
+    $bodyJson = $payload | ConvertTo-Json -Depth 12
+    $bodyBytes = [System.Text.Encoding]::UTF8.GetBytes($bodyJson)
+
+    $headers = @{ Authorization = "Bearer $($Config.sendgrid_api_key)" }
+
+    try {
+        $response = Invoke-WebRequest -Uri 'https://api.sendgrid.com/v3/mail/send' -Method Post `
+            -Headers $headers -ContentType 'application/json; charset=utf-8' -Body $bodyBytes -TimeoutSec 60
+    } catch {
+        # SendGrid's error body (400/401/403/etc.) carries the actual reason
+        # (bad from address, unverified domain, invalid attachment, ...) --
+        # surface it, since the exception message alone just says "Bad Request".
+        $errorBody = if ($_.ErrorDetails.Message) { $_.ErrorDetails.Message } else { '(no response body)' }
+        throw "SendGrid send to '$To' failed: $($_.Exception.Message). Response: $errorBody"
+    }
+
+    # A successful send is 202 Accepted with an empty body -- there is no
+    # response object to validate, only the status code.
+    if ($response.StatusCode -ne 202) {
+        throw "SendGrid send to '$To' returned unexpected status $($response.StatusCode): $($response.Content)"
     }
 }
 
