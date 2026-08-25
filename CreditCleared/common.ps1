@@ -19,7 +19,8 @@ function Get-CreditClearedConfig {
         'delivery_delay_hours', 'delivery_time_hour', 'delivery_time_minute',
         'job_storage_path', 'log_path', 'template_path',
         'shadow_bureau_reminder_1hr_delay_hours', 'shadow_bureau_reminder_24hr_delay_hours',
-        'shadow_bureau_manual_flag_hours', 'shadow_bureau_reminder_template_path'
+        'shadow_bureau_manual_flag_hours', 'shadow_bureau_reminder_template_path',
+        'stripe_webhook_secret', 'calendly_link', 'myfreescorenow_link'
     )
     $missing = $required | Where-Object { $config.PSObject.Properties.Name -notcontains $_ }
     if ($missing) {
@@ -231,14 +232,15 @@ function Move-JobFolder {
     return $dest
 }
 
-# The 5 shadow bureaus clients are asked to freeze before analysis proceeds.
+# The 4 shadow bureaus clients are asked to freeze before analysis proceeds.
 # Keep this list in one place -- main.ps1 (upload gate + confirmation
 # handler) and shadow-bureau-followup.ps1 both need the exact same set.
+# SageStream is defunct/merged as of 2026 and was dropped; the former ARS
+# freeze page (consumers.dataxltd.com) is kept under the "dataxltd" name.
 $Script:ShadowBureaus = [ordered]@{
     lexisnexis  = 'LexisNexis'
-    sagestream  = 'SageStream'
     innovis     = 'Innovis'
-    ars         = 'ARS'
+    dataxltd    = 'dataxltd'
     chexsystems = 'ChexSystems'
 }
 
@@ -364,6 +366,60 @@ function Unregister-CreditClearedAtJob {
         try { & atrm $atJobId 2>&1 | Out-Null } catch {}
     }
     Remove-Item -LiteralPath $atJobFile -Force -ErrorAction SilentlyContinue
+}
+
+function Test-StripeSignature {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][byte[]]$Body,
+        [Parameter(Mandatory)][string]$Secret,
+        [string]$SignatureHeaderValue
+    )
+
+    # Stripe sends a "Stripe-Signature" header shaped like:
+    #   t=<unix-timestamp>,v1=<hex-hmac>[,v0=<hex-hmac>]
+    # (v0 is a legacy scheme kept for backwards compatibility; only v1 is
+    # checked here.) The signed message is "{timestamp}.{raw_body}" (raw
+    # bytes, not re-serialized), HMAC-SHA256'd with the webhook signing
+    # secret and hex-encoded -- structurally the same scheme as Formspree's
+    # (see Test-FormspreeSignature), so this mirrors it rather than sharing
+    # code, since each integration's exact format is worth documenting on
+    # its own. https://stripe.com/docs/webhooks#verify-manually
+    if ([string]::IsNullOrEmpty($SignatureHeaderValue)) { return $false }
+
+    $parts = @{}
+    foreach ($segment in $SignatureHeaderValue.Split(',')) {
+        $kv = $segment.Split('=', 2)
+        if ($kv.Count -eq 2) { $parts[$kv[0].Trim()] = $kv[1].Trim() }
+    }
+
+    $timestamp = $parts['t']
+    $signature = $parts['v1']
+    if ([string]::IsNullOrEmpty($timestamp) -or [string]::IsNullOrEmpty($signature)) { return $false }
+
+    $timestampSeconds = 0L
+    if (-not [long]::TryParse($timestamp, [ref]$timestampSeconds)) { return $false }
+    $requestTime = [DateTimeOffset]::FromUnixTimeSeconds($timestampSeconds)
+    $skew = [Math]::Abs(([DateTimeOffset]::UtcNow - $requestTime).TotalSeconds)
+    if ($skew -gt 300) { return $false }
+
+    $bodyText = [System.Text.Encoding]::UTF8.GetString($Body)
+    $signedPayloadBytes = [System.Text.Encoding]::UTF8.GetBytes("$timestamp.$bodyText")
+
+    $hmac = [System.Security.Cryptography.HMACSHA256]::new([System.Text.Encoding]::UTF8.GetBytes($Secret))
+    try {
+        $hash = $hmac.ComputeHash($signedPayloadBytes)
+    } finally {
+        $hmac.Dispose()
+    }
+    $computed = ($hash | ForEach-Object { $_.ToString('x2') }) -join ''
+
+    if ($computed.Length -ne $signature.Length) { return $false }
+    $diff = 0
+    for ($i = 0; $i -lt $computed.Length; $i++) {
+        $diff = $diff -bor ([byte][char]$computed[$i] -bxor [byte][char]$signature[$i])
+    }
+    return ($diff -eq 0)
 }
 
 function Invoke-ClaudeMessage {

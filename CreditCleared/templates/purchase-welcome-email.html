@@ -1,0 +1,46 @@
+<!--
+  Subject: Welcome to Credit Cleared — here's what happens next
+  Tokens: {{CLIENT_FIRST_NAME}} {{MYFREESCORENOW_LINK}} {{UPLOAD_PAGE_URL}}
+  {{CALENDLY_SECTION}} {{YOUR_NAME}} {{BUSINESS_DBA}} {{BUSINESS_NAME}}
+
+  {{CALENDLY_SECTION}} is pre-built HTML computed in stripe-webhook.ps1
+  (Invoke-StripeWebhookRequest) -- an empty string for the DIY tier, a full
+  paragraph with the Calendly link for the Done-With-You tier.
+  Expand-Template only does flat token substitution, so the conditional
+  lives in the caller, not in this file.
+
+  The 4 shadow bureau freeze links below match $Script:ShadowBureaus
+  (common.ps1) -- SageStream and the old ARS freeze page are both
+  defunct/merged as of 2026; the ARS slot is kept under "dataxltd" at its
+  same freeze URL. If that list changes again, update both places.
+-->
+<p>Hi {{CLIENT_FIRST_NAME}},</p>
+
+<p><strong>Welcome to your future.</strong> Congratulations — clearing your credit opens up a world of new possibilities, and we're already getting to work on your roadmap.</p>
+
+<p>Here's what to do right now, while we get started:</p>
+
+<p><strong>1. Pull your free credit report.</strong> Go to <a href="{{MYFREESCORENOW_LINK}}">{{MYFREESCORENOW_LINK}}</a> and download your 3-bureau credit report. You'll be asked to upload it on <a href="{{UPLOAD_PAGE_URL}}">this page</a> to kick off your analysis.</p>
+
+<p><strong>2. Freeze your file at these 4 shadow bureaus.</strong> This needs to be done before we start working on your credit roadmap — a dispute we send on your behalf can otherwise get overlooked as "already verified." Once the negatives tied to a bureau have been successfully removed, you're free to unfreeze it there yourself.</p>
+
+<ul>
+  <li><a href="https://www.chexsystems.com/">ChexSystems</a></li>
+  <li><a href="https://consumer.risk.lexisnexis.com/">LexisNexis</a></li>
+  <li><a href="https://innovis.com/personal/securityFreeze">Innovis</a></li>
+  <li><a href="https://consumers.dataxltd.com/consumerCreditFreeze">dataxltd</a></li>
+</ul>
+
+<p>While you're getting those two steps done, keep an eye on your inbox — you'll receive a free Credit Education Guide shortly, and your roadmap typically follows within a day or two of your report upload.</p>
+
+{{CALENDLY_SECTION}}
+
+<p>Any questions, just reply to this email.</p>
+
+<p>
+All the best,<br>
+{{YOUR_NAME}}<br>
+{{BUSINESS_DBA}} | {{BUSINESS_NAME}}
+</p>
+
+<p><em>Educational and informational service only. Not a credit repair organization.</em></p>

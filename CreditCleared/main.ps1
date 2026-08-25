@@ -19,6 +19,12 @@ param(
 $ErrorActionPreference = 'Stop'
 $ScriptRoot = $PSScriptRoot
 . (Join-Path $ScriptRoot 'common.ps1')
+# stripe-webhook.ps1 defines Invoke-StripeWebhookRequest and its helpers --
+# a function library dot-sourced here like common.ps1, not a standalone
+# script like analyze.ps1/deliver.ps1 (see its header comment for why: only
+# one process can bind $Port, and Caddy proxies every path under
+# webhook.mycreditcleared.com to that same upstream).
+. (Join-Path $ScriptRoot 'stripe-webhook.ps1')
 
 function Write-CrashLog {
     # Last-resort logger for failures that happen before config is loaded, or
@@ -496,6 +502,7 @@ function Invoke-ShadowBureauConfirmation {
 
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://+:$Port/webhook/")
+$listener.Prefixes.Add("http://+:$Port/stripe-webhook/")
 
 try {
     $listener.Start()
@@ -521,7 +528,11 @@ try {
             throw
         }
         try {
-            Invoke-WebhookRequest -Context $context -Config $Config -TestMode:$TestMode -Stage $Stage
+            if ($context.Request.Url.AbsolutePath.StartsWith('/stripe-webhook/', [StringComparison]::OrdinalIgnoreCase)) {
+                Invoke-StripeWebhookRequest -Context $context -Config $Config
+            } else {
+                Invoke-WebhookRequest -Context $context -Config $Config -TestMode:$TestMode -Stage $Stage
+            }
         } catch {
             $errDetail = "Unhandled error processing webhook request: $($_.Exception.GetType().FullName): $_`n$($_.ScriptStackTrace)"
             Write-Warning $errDetail

@@ -210,7 +210,7 @@ footer {
       <div class="confirm-header">
         <span class="section-label">One Step Left</span>
         <h1>Confirm Your Shadow Bureau Freezes</h1>
-        <p>Your roadmap is on hold until you confirm all 5 freezes are in place.</p>
+        <p>Your roadmap is on hold until you confirm all 4 freezes are in place.</p>
       </div>
 
       <div class="confirm-card">
@@ -229,7 +229,7 @@ footer {
           keep the two submission types distinct.
 
           Field names match what main.ps1's Invoke-ShadowBureauConfirmation
-          reads: client_email, the 5 freeze_* checkboxes, confirmed_at.
+          reads: client_email, the 4 freeze_* checkboxes, confirmed_at.
         -->
         <form id="confirm-form" action="https://formspree.io/f/mnpanjvk" method="POST">
           <input type="hidden" id="client_email" name="client_email" value="">
@@ -238,15 +238,14 @@ footer {
 
           <div class="checklist">
             <label><input type="checkbox" name="freeze_lexisnexis" class="freeze-check"> LexisNexis</label>
-            <label><input type="checkbox" name="freeze_sagestream" class="freeze-check"> SageStream</label>
             <label><input type="checkbox" name="freeze_innovis" class="freeze-check"> Innovis</label>
-            <label><input type="checkbox" name="freeze_ars" class="freeze-check"> ARS</label>
+            <label><input type="checkbox" name="freeze_dataxltd" class="freeze-check"> dataxltd</label>
             <label><input type="checkbox" name="freeze_chexsystems" class="freeze-check"> ChexSystems</label>
           </div>
 
-          <button type="submit" class="btn-submit" id="submit-btn" disabled>Confirm All 5 Freezes</button>
+          <button type="submit" class="btn-submit" id="submit-btn" disabled>Confirm All 4 Freezes</button>
 
-          <p class="form-note">Check all 5 boxes above to enable confirmation. This unlocks your analysis — it doesn't submit anything else.</p>
+          <p class="form-note">Check all 4 boxes above to enable confirmation. This unlocks your analysis — it doesn't submit anything else.</p>
         </form>
       </div>
     </div>
@@ -322,7 +321,7 @@ footer {
 
     var allChecked = checkboxes.every(function (cb) { return cb.checked; });
     if (!allChecked) {
-      showError('Please check all 5 boxes before confirming.');
+      showError('Please check all 4 boxes before confirming.');
       return;
     }
 
@@ -350,7 +349,7 @@ footer {
     }).catch(function (err) {
       showError(err.message || 'Network error. Please check your connection and try again.');
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Confirm All 5 Freezes';
+      submitBtn.textContent = 'Confirm All 4 Freezes';
     });
   });
 })();

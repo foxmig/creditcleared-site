@@ -296,7 +296,7 @@ footer {
           via analyze.ps1, into the GOAL_FROM_FORM / DEADLINE_FROM_FORM /
           NOTES_FROM_FORM tokens of consumer-analysis-user-prompt.txt.
 
-          The 5 freeze_* checkboxes are read by Get-ShadowBureauChecklist
+          The 4 freeze_* checkboxes are read by Get-ShadowBureauChecklist
           (common.ps1) -- an unchecked box is simply absent from Formspree's
           payload, not present-with-value-false. Submission is never blocked
           on these; main.ps1 gates entry into the analysis queue on them
@@ -342,12 +342,11 @@ footer {
 
           <div class="shadow-bureau-section">
             <label class="section-label">Shadow Bureau Freeze Confirmation</label>
-            <p class="helper-text">Confirm you've frozen each of the 5 shadow bureaus per your welcome email instructions:</p>
+            <p class="helper-text">Confirm you've frozen each of the 4 shadow bureaus per your welcome email instructions:</p>
 
             <label><input type="checkbox" name="freeze_lexisnexis"> LexisNexis</label>
-            <label><input type="checkbox" name="freeze_sagestream"> SageStream</label>
             <label><input type="checkbox" name="freeze_innovis"> Innovis</label>
-            <label><input type="checkbox" name="freeze_ars"> ARS</label>
+            <label><input type="checkbox" name="freeze_dataxltd"> dataxltd</label>
             <label><input type="checkbox" name="freeze_chexsystems"> ChexSystems</label>
           </div>
 

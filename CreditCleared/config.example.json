@@ -37,5 +37,9 @@
   "shadow_bureau_reminder_template_path": "./templates/shadow-bureau-reminder-email.html",
 
   "funding_addon_price": 197,
-  "funding_addon_payment_link": "[STRIPE PAYMENT LINK FOR $197 FUNDING ADD-ON]"
+  "funding_addon_payment_link": "[STRIPE PAYMENT LINK FOR $197 FUNDING ADD-ON]",
+
+  "stripe_webhook_secret": "[STRIPE WEBHOOK SIGNING SECRET, whsec_...]",
+  "calendly_link": "[CALENDLY LINK FOR DONE-WITH-YOU STRATEGY CALLS]",
+  "myfreescorenow_link": "[MYFREESCORENOW.COM AFFILIATE LINK]"
 }
