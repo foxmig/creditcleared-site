@@ -47,7 +47,7 @@ from docx.shared import Pt, RGBColor
 
 NAVY = RGBColor(0x0A, 0x16, 0x28)
 GOLD = RGBColor(0xC9, 0xA8, 0x4C)
-LEGAL_FOOTER = "Educational and informational service only. Not a credit repair organization."
+LEGAL_FOOTER = "Credit Cleared provides credit report analysis, dispute preparation, and creditor negotiation guidance. Individual results vary and are not guaranteed."
 
 SECTION_HEADERS = [
     "EXECUTIVE SUMMARY",

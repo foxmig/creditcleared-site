@@ -547,6 +547,15 @@ section { position: relative; }
   margin-top: 1px;
 }
 .price-card.premium .price-features li::before { color: var(--gold); }
+.price-refund-note {
+  font-size: 0.78rem;
+  color: var(--gray-mid);
+  text-align: center;
+  margin-top: 12px;
+}
+.price-refund-note a { color: var(--navy); text-decoration: underline; }
+.price-card.premium .price-refund-note { color: rgba(255,255,255,0.45); }
+.price-card.premium .price-refund-note a { color: var(--gold-light); }
 .price-copy .closer {
   font-family: 'DM Serif Display', serif;
   font-style: italic;
@@ -923,7 +932,7 @@ footer {
 <nav class="site-nav">
   <div class="container-wide nav-inner">
     <a href="#" class="nav-logo">Credit<span>Cleared</span></a>
-    <span class="nav-trust">🔒 Secure · Educational Service</span>
+    <span class="nav-trust">🔒 Secure</span>
     <a href="#price" class="nav-cta">Get My Roadmap →</a>
   </div>
 </nav>
@@ -1120,6 +1129,7 @@ footer {
           <li>Delivered within 48 hours of report upload</li>
         </ul>
         <a href="https://buy.stripe.com/4gM3cv0ufem58edf0eeAg00" class="btn-primary" style="display:block;text-align:center;padding:18px;">Get My Roadmap — $297 →</a>
+        <p class="price-refund-note">Full refund within 3 business days. <a href="terms.html#refund-policy">Refund policy →</a></p>
       </div>
       <div class="price-card premium">
         <div class="price-card-badge">For Urgent Timelines</div>
@@ -1137,6 +1147,7 @@ footer {
           <li>Best for: closing dates, loan applications, leases</li>
         </ul>
         <a href="https://buy.stripe.com/7sY9ATel52Dnaml5pEeAg01" style="display:block;text-align:center;padding:18px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);font-weight:700;border-radius:4px;text-decoration:none;font-size:1rem;">Apply for the Intensive — $1,997 →</a>
+        <p class="price-refund-note">Full refund within 3 business days. <a href="terms.html#refund-policy">Refund policy →</a></p>
       </div>
     </div>
     <div class="price-copy fade-in">
@@ -1286,7 +1297,7 @@ footer {
       <p>That moment is available to you right now. Not tomorrow. Not after you think about it more. Right now, with the same information you already have, you can either close this page and add it to the list of things you meant to do — or you can do the one thing that's different from every other time you've been here.</p>
     </div>
     <div class="proc-cta fade-in">
-      <a href="#" class="btn-primary">Get My Credit Cleared Roadmap — $297 →</a>
+      <a href="https://buy.stripe.com/4gM3cv0ufem58edf0eeAg00" class="btn-primary">Get My Credit Cleared Roadmap — $297 →</a>
       <p>Report analysis begins within 24 hours of upload.</p>
     </div>
   </div>
@@ -1309,10 +1320,10 @@ footer {
       <p style="text-align:center;font-size:1.1rem;color:rgba(255,255,255,0.7);margin-top:32px;">The only thing left to do is stop.</p>
     </div>
     <div class="final-cta fade-in">
-      <a href="#" class="btn-primary" style="font-size:1.15rem;padding:22px 56px;">Get Credit Cleared — $297 →</a>
+      <a href="https://buy.stripe.com/4gM3cv0ufem58edf0eeAg00" class="btn-primary" style="font-size:1.15rem;padding:22px 56px;">Get Credit Cleared — $297 →</a>
       <br><br>
-      <a href="#" class="btn-secondary">Done-With-You Intensive — $1,997 →</a>
-      <p>🔒 Secure checkout · Stripe · Educational service · Your federal rights, fully explained</p>
+      <a href="https://buy.stripe.com/7sY9ATel52Dnaml5pEeAg01" class="btn-secondary">Done-With-You Intensive — $1,997 →</a>
+      <p>🔒 Secure checkout · Stripe · Your federal rights, fully explained · <a href="terms.html#refund-policy" style="color:var(--gold-light);">Refund policy</a></p>
     </div>
   </div>
 </section>
@@ -1322,11 +1333,12 @@ footer {
   <div class="container-wide footer-inner">
     <div class="footer-logo">Credit<span>Cleared</span></div>
     <div class="footer-legal">
-      Credit Cleared provides educational and informational services only. We are not a credit repair organization as defined under the Credit Repair Organizations Act. All actions taken on your credit report are performed by you using your rights under the FCRA and FDCPA. Individual results vary and are not guaranteed.
+      Credit Cleared provides credit report analysis, dispute preparation, and creditor negotiation guidance. Individual results vary and are not guaranteed.
     </div>
     <div class="footer-links">
       <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="terms.html#refund-policy">Refund Policy</a>
       <a href="#">Contact</a>
     </div>
   </div>

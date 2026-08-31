@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service &amp; Refund Policy — Credit Cleared</title>
+<meta name="robots" content="noindex, follow">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0A1628;
+  --navy-mid: #0F2040;
+  --navy-light: #152847;
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --white: #FFFFFF;
+  --green-accent: #1A5C3A;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy);
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.7;
+}
+
+h1, h2 { font-family: 'Playfair Display', serif; line-height: 1.25; }
+
+.container-wide { max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+
+/* ── NAV (matches index.html / confirm-freeze.html) ── */
+.site-nav {
+  background: rgba(10,22,40,0.95);
+  backdrop-filter: blur(10px);
+  padding: 18px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(201,168,76,0.15);
+}
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--white);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+.nav-logo span { color: var(--gold); }
+.nav-trust { font-size: 0.73rem; color: rgba(255,255,255,0.4); }
+@media(max-width:580px){ .nav-trust { display:none; } }
+
+/* ── MAIN ── */
+main { flex: 1; padding: 56px 20px 80px; }
+
+.legal-wrap { max-width: 760px; margin: 0 auto; }
+
+.legal-header { margin-bottom: 36px; }
+.legal-header .section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+  display: block;
+}
+.legal-header h1 { font-size: clamp(1.7rem, 1.3rem + 1.6vw, 2.3rem); margin-bottom: 10px; }
+.legal-header .updated { color: rgba(255,255,255,0.45); font-size: 0.85rem; }
+
+/* ── ATTORNEY REVIEW NOTICE ── */
+.review-notice {
+  background: var(--navy-light);
+  border: 1px solid rgba(201,168,76,0.35);
+  border-left: 3px solid var(--gold);
+  border-radius: 6px;
+  padding: 18px 20px;
+  margin: 28px 0 40px;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.6;
+}
+.review-notice strong { color: var(--gold-light); }
+
+/* ── TABLE OF CONTENTS ── */
+.toc {
+  background: var(--navy-light);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 8px;
+  padding: 22px 24px;
+  margin-bottom: 44px;
+}
+.toc-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 12px;
+}
+.toc ol { list-style: none; counter-reset: toc-counter; display: grid; gap: 7px; }
+.toc li { counter-increment: toc-counter; font-size: 0.9rem; }
+.toc li::before {
+  content: counter(toc-counter) ". ";
+  color: var(--gold);
+  font-weight: 600;
+}
+.toc a { color: rgba(255,255,255,0.75); text-decoration: none; }
+.toc a:hover { color: var(--gold-light); text-decoration: underline; }
+
+/* ── DOCUMENT BODY ── */
+.legal-doc section { margin-bottom: 38px; scroll-margin-top: 90px; }
+.legal-doc h2 {
+  font-size: 1.3rem;
+  color: var(--gold-light);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(201,168,76,0.15);
+}
+.legal-doc p {
+  color: rgba(255,255,255,0.82);
+  font-size: 0.95rem;
+  margin-bottom: 14px;
+}
+.legal-doc p:last-child { margin-bottom: 0; }
+.legal-doc ul {
+  margin: 0 0 14px;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+.legal-doc ul li {
+  color: rgba(255,255,255,0.82);
+  font-size: 0.95rem;
+  padding-left: 26px;
+  position: relative;
+}
+.legal-doc ul li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  color: var(--gold);
+  font-size: 0.85rem;
+}
+.legal-doc a { color: var(--gold-light); }
+.legal-doc a:hover { text-decoration: none; }
+
+.deliverable-block {
+  background: var(--navy-light);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 8px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+.deliverable-block:last-child { margin-bottom: 0; }
+.deliverable-block .db-name { color: var(--gold-light); font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
+.deliverable-block p { margin-bottom: 0; }
+
+#refund-policy {
+  background: var(--navy-light);
+  border: 1px solid rgba(201,168,76,0.25);
+  border-radius: 8px;
+  padding: 24px 26px 26px;
+  margin-left: -26px;
+  margin-right: -26px;
+}
+
+.legal-footer-nav {
+  margin-top: 8px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(201,168,76,0.15);
+}
+.legal-footer-nav a {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+.legal-footer-nav a:hover { color: var(--gold-light); }
+
+/* ── FOOTER (matches index.html / confirm-freeze.html) ── */
+footer {
+  background: #060E1A;
+  padding: 28px 0;
+  border-top: 1px solid rgba(201,168,76,0.1);
+  text-align: center;
+}
+.footer-legal {
+  font-size: 0.73rem;
+  color: rgba(255,255,255,0.3);
+  max-width: 640px;
+  margin: 0 auto 14px;
+  line-height: 1.6;
+}
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.footer-links a {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+  text-decoration: none;
+}
+.footer-links a:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <div class="container-wide nav-inner">
+    <a href="index.html" class="nav-logo">Credit<span>Cleared</span></a>
+    <span class="nav-trust">Terms &amp; Policies</span>
+  </div>
+</nav>
+
+<main>
+  <div class="legal-wrap">
+
+    <div class="legal-header">
+      <span class="section-label">Legal</span>
+      <h1>Terms of Service &amp; Refund Policy</h1>
+      <p class="updated">Last updated: August 31, 2026</p>
+    </div>
+
+    <div class="review-notice">
+      <strong>Attorney review pending.</strong> This content is built around the Credit Repair Organizations Act's (CROA) core requirements and reasonable working defaults for billing timing and refund policy, but has not yet been reviewed by an attorney familiar with CROA and Pennsylvania credit services law. Treat as live-but-provisional. Revisit once reviewed.
+    </div>
+
+    <nav class="toc" aria-label="Table of contents">
+      <div class="toc-title">On this page</div>
+      <ol>
+        <li><a href="#who-we-are">Who We Are</a></li>
+        <li><a href="#nature-of-services">Nature of Our Services</a></li>
+        <li><a href="#croa-rights">Your Rights Under the Credit Repair Organizations Act (CROA)</a></li>
+        <li><a href="#what-we-deliver">What We Deliver</a></li>
+        <li><a href="#what-we-do-not-do">What We Do Not Do</a></li>
+        <li><a href="#cancellation">Cancellation &amp; Right to Cancel</a></li>
+        <li><a href="#refund-policy">Refund Policy (Outside the 3-Day Window)</a></li>
+        <li><a href="#disputes">Disputes</a></li>
+        <li><a href="#governing-law">Governing Law</a></li>
+      </ol>
+    </nav>
+
+    <div class="legal-doc">
+
+      <section id="who-we-are">
+        <h2>1. Who We Are</h2>
+        <p>Credit Cleared is a service of Silver Indigo LLC ("Company," "we," "us"), located in Bryn Mawr, Pennsylvania. We provide credit report analysis, dispute letter preparation, creditor negotiation guidance, and related credit education services ("Services") to consumers ("you," "Client").</p>
+      </section>
+
+      <section id="nature-of-services">
+        <h2>2. Nature of Our Services</h2>
+        <p>We are not a law firm, and nothing we provide constitutes legal advice. We do not guarantee removal of any specific item from your credit report, a specific credit score increase, or any particular outcome. Credit reporting agencies and creditors are legally required to investigate disputes and correct verified inaccuracies, a right you hold and can exercise yourself, at no cost, without our services.</p>
+      </section>
+
+      <section id="croa-rights">
+        <h2>3. Your Rights Under the Credit Repair Organizations Act (CROA)</h2>
+        <p>Federal law requires we disclose the following to you before you sign any agreement or pay any fee:</p>
+        <ul>
+          <li>You have the right to cancel your contract with us for any reason within 3 business days from the date you sign it, without penalty. (See Section 6 for how to exercise this right.)</li>
+          <li>You have the right to dispute inaccurate information on your credit report yourself, for free, directly with the credit bureaus and creditors, without paying anyone.</li>
+          <li>A credit repair organization may not charge or collect any fee until the promised services have been fully performed. Our fee covers the personalized credit roadmap, which is a fixed-scope deliverable provided within 48 hours of your report upload. We consider that deliverable the completed service for billing purposes.</li>
+          <li>We cannot make any statement that is untrue or misleading regarding your credit report or creditworthiness.</li>
+          <li>We cannot perform any service without first providing you a written contract that fully describes the services to be performed and their cost.</li>
+          <li>You have the right to sue a credit repair organization that violates the Credit Repair Organizations Act. This law does not limit your right to seek damages under any other applicable law.</li>
+        </ul>
+      </section>
+
+      <section id="what-we-deliver">
+        <h2>4. What We Deliver</h2>
+        <div class="deliverable-block">
+          <div class="db-name">DIY Roadmap ($297)</div>
+          <p>A personalized, account by account credit analysis, prioritized by score impact, including direct creditor contact information, call scripts, dispute and goodwill letters, and a milestone timeline. Delivered within 48 hours of your credit report upload.</p>
+        </div>
+        <div class="deliverable-block">
+          <div class="db-name">Done-With-You Intensive ($1,997)</div>
+          <p>Everything in the DIY Roadmap, plus a 1-on-1 strategy call within 24 hours and ongoing guidance through the dispute process.</p>
+        </div>
+      </section>
+
+      <section id="what-we-do-not-do">
+        <h2>5. What We Do Not Do</h2>
+        <ul>
+          <li>We do not contact credit bureaus or creditors on your behalf as your legal representative.</li>
+          <li>We do not remove accurate, verifiable negative information from your credit report. No legitimate service can.</li>
+          <li>We do not guarantee a specific credit score or timeline for results.</li>
+        </ul>
+      </section>
+
+      <section id="cancellation">
+        <h2>6. Cancellation &amp; Right to Cancel</h2>
+        <p>You may cancel this agreement, without penalty or obligation, within 3 business days from the date you purchase, by emailing <a href="mailto:cliff@mycreditcleared.com">cliff@mycreditcleared.com</a>. If you cancel within this window, any fee paid will be refunded in full within 5 business days.</p>
+      </section>
+
+      <section id="refund-policy">
+        <h2>7. Refund Policy (Outside the 3-Day Window)</h2>
+        <p>The DIY Roadmap is a fixed-scope deliverable. Once your personalized roadmap has been delivered, the service is considered complete and is non-refundable.</p>
+        <p>For the Done-With-You Intensive, refunds are prorated based on what has been delivered. If you cancel before your 1-on-1 strategy call has taken place, the portion of the fee tied to undelivered services will be refunded. Once the strategy call has occurred, the engagement is considered underway and the fee is non-refundable.</p>
+      </section>
+
+      <section id="disputes">
+        <h2>8. Disputes</h2>
+        <p>If you believe we have not delivered as promised, contact us first at <a href="mailto:cliff@mycreditcleared.com">cliff@mycreditcleared.com</a> so we can resolve it directly.</p>
+      </section>
+
+      <section id="governing-law">
+        <h2>9. Governing Law</h2>
+        <p>This agreement is governed by the laws of the Commonwealth of Pennsylvania.</p>
+      </section>
+
+    </div>
+
+    <div class="legal-footer-nav">
+      <a href="index.html">← Back to Credit Cleared</a>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container-wide">
+    <div class="footer-legal">
+      Credit Cleared provides credit report analysis, dispute preparation, and creditor negotiation guidance. Individual results vary and are not guaranteed.
+    </div>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="terms.html#refund-policy">Refund Policy</a>
+      <a href="mailto:cliff@mycreditcleared.com">Contact</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
